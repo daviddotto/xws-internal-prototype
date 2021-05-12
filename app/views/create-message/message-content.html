@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block pageTitle %}
+    Warning message
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form action="spoken-message">
+
+                <h1 class="govuk-heading-xl">Warning message</h1>
+
+                {{ govukCharacterCount ({
+                    id: 'message-content',
+                    name: 'message-content',
+                    maxlength: '1500',
+                    rows: 15,
+                    value: data['message-content'],
+                    label: {
+                        text: 'Message content',
+                        classes: 'govuk-visually-hidden'
+                    }
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

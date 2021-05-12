@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+{% block pageTitle %}
+    Enter an area code
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form method="post">
+
+                <h1 class="govuk-heading-xl">Enter an area code</h1>
+
+                {{ govukInput ({
+                    id: 'area-code',
+                    name: 'area-code',
+                    value: data['area-code'] if data['area-code'] else '',
+                    classes: 'govuk-input--width-10',
+                    label: {
+                        text: 'Area code',
+                        classes: 'govuk-input--width-10 govuk-visually-hidden'
+                    }
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
