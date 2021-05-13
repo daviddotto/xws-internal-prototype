@@ -21,7 +21,11 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-            <form action="message-content">
+            {% if data.fromCheck %}
+            <form action="check">
+            {% else %}
+            <form action="spoken-message">
+            {% endif %}
 
                 {{ govukRadios ({
                     idPrefix: 'severity',

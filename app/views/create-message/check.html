@@ -21,7 +21,7 @@
 
 <div class="govuk-grid-row">
 
-        <div class="govuk-grid-column-full">
+        <div class="govuk-grid-column-two-thirds">
 
             <form action="reminder">
 
@@ -42,10 +42,28 @@
                 {% endset %}
 
                 {{ govukSummaryList ({
+                    classes: 'app-summary-list-vertical',
                     rows: [
                         {
                             key: {
-                                text: 'Message'
+                                text: 'Warning severity'
+                            },
+                            value: {
+                                text: data['severity']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'severity?fromCheck=true',
+                                        visuallyHiddenText: 'the severity of this message'
+                                    }
+                                ]
+                            }
+                        } if area.type == 'warning',
+                        {
+                            key: {
+                                text: 'Email content'
                             },
                             value: {
                                 text: data['message-content']
@@ -53,7 +71,7 @@
                             actions: {
                                 items: [
                                     {
-                                        text: 'Change',
+                                        text: 'Change messsage',
                                         href: 'message-content?fromCheck=true',
                                         visuallyHiddenText: 'message content'
                                     }
@@ -62,7 +80,7 @@
                         },
                         {
                             key: {
-                                text: 'Spoken message'
+                                text: 'Floodline (IVR) audio'
                             },
                             value: {
                                 html: spokenMessageHTML
@@ -70,7 +88,7 @@
                             actions: {
                                 items: [
                                     {
-                                        text: 'Change',
+                                        text: 'Change message',
                                         href: 'spoken-message?fromCheck=true',
                                         visuallyHiddenText: 'spoken message content'
                                     }
@@ -79,7 +97,7 @@
                         },
                         {
                             key: {
-                                text: 'Add urgent telephone message?'
+                                text: 'Add urgent message to telephone call?'
                             },
                             value: {
                                 text: data['add-urgent-message']
@@ -96,7 +114,7 @@
                         },
                         {
                             key: {
-                                text: 'Urgent telephone message'
+                                text: 'Telephone call audio'
                             },
                             value: {
                                 html: urgentSpokenMessageHTML
@@ -104,7 +122,7 @@
                             actions: {
                                 items: [
                                     {
-                                        text: 'Change',
+                                        text: 'Change urgent telephone message',
                                         href: 'urgent-spoken-message?fromCheck=true',
                                         visuallyHiddenText: 'urgent spoken message content'
                                     }
