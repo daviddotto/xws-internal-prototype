@@ -28,27 +28,29 @@
 
                 {% if data['send-option'] == 'Send' %}
                     {{ govukPanel({
-                        titleText: area.type | sentenceCase + ' sent',
-                        html: 'Your reference number<br><strong>HDJ2123F</strong>'
+                        titleText: area.type | sentenceCase + ' sent'
                     }) }}
+
+                    <p>
+                        The {{ area.type }} is now being sent to all subscribers in {{ area.label }}.
+                    </p>
                 {% else %}
                     {{ govukPanel({
-                        titleText: area.type | sentenceCase + ' scheduled',
-                        html: 'Your reference number<br><strong>HDJ2123F</strong>'
+                        titleText: area.type | sentenceCase + ' scheduled'
                     }) }}
-                {% endif %}
 
-                <p>
-                    We will send an email to xxxx@xxxx.xxx when the message has sent to all subscribers in the area.
-                </p>
+                    <p>
+                        The {{ area.type }} has now been scheduled to be sent to all subscribers in {{ area.label }} at XX:XX on XXX XXXXXX 2021.
+                    </p>
+                {% endif %}
 
                 <p>
                     You can close this window now.
                 </p>
 
                 {{ govukButton ({
-                    html: 'Return to target area',
-                    href: 'area-details'
+                    html: 'Return to home page',
+                    href: '#'
                 }) }}
 
             </form>

@@ -25,9 +25,9 @@
 
     <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-xl">Urgent spoken message content</h1>
+        <h1 class="govuk-heading-xl">Urgent message to be added to telephone calls</h1>
 
-        <p>This short message will be added to the beginning of the standard message played to users who have asked to get flood {{ area.type }}s by telephone.</p>
+        <p>This short message will be added to the standard message played to users who have asked to get flood {{ area.type }}s by telephone.</p>
 
     </div>
 
@@ -42,8 +42,8 @@
             {{ govukCharacterCount ({
                 id: 'urgent-spoken-message',
                 name: 'urgent-spoken-message',
-                maxlength: '150',
-                rows: 3,
+                maxlength: '300',
+                rows: 4,
                 value: data['urgent-spoken-message'] if data['urgent-spoken-message'],
                 label: {
                     text: 'Spoken message content',
@@ -87,21 +87,23 @@
                     classes: 'govuk-radios--small govuk-radios--inline',
                     fieldset: {
                         legend: {
-                            text: 'Save pronounciation for this target area?',
+                            text: 'Save this pronounciation for future messages in this target area?',
                             isPageHeading: true,
                             classes: 'govuk-fieldset__legend--s'
                         }
                     },
+                    hint: {
+                        text: 'Use this option if you are correcting the pronunciation of a common phrase like a place name. If you select ‘no’ it will apply to this ' + area.type + ' only.'
+                    },
                     items: [
                         {
                             text: 'Yes',
-                            value: 'Yes',
-                            checked: true if data['adjustment-save'] == 'Yes'
+                            value: 'Yes'
                         },
                         {
                             text: 'No',
                             value: 'No',
-                            checked: true if data['adjustment-save'] == 'No'
+                            checked: true
                         }
                     ]
                 }) }}
@@ -119,31 +121,6 @@
             {{ govukDetails({
                 summaryText: 'Change the pronunciation of words and phrases',
                 html: pronunciationsHTML
-            }) }}
-
-            {{ govukRadios ({
-                idPrefix: 'urgent-preview-checked',
-                name: 'urgent-preview-checked',
-                classes: 'govuk-radios--small govuk-radios--inline',
-                fieldset: {
-                    legend: {
-                        text: 'Have you used the preview to check the pronunciation of this message?',
-                        isPageHeading: false,
-                        classes: 'govuk-fieldset__legend--s'
-                    }
-                },
-                items: [
-                    {
-                        text: 'Yes',
-                        value: 'Yes',
-                        checked: true if data['urgent-preview-checked'] == 'Yes'
-                    },
-                    {
-                        text: 'No',
-                        value: 'No',
-                        checked: true if data['urgent-preview-checked'] == 'No'
-                    }
-                ]
             }) }}
 
             {{ govukButton ({

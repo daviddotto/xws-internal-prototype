@@ -21,6 +21,10 @@ $govuk-assets-path: '/govuk/assets/';
 		sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
 }
 
+html {
+	font-size: 75%;
+}
+
 a.app-link-destructive {
 	color: govuk-colour('red');
 	&:visited {
@@ -40,4 +44,21 @@ a.app-link-destructive {
 
 .app-notification-list {
 	margin-bottom: 60px;
+}
+
+.app-summary-list-vertical .govuk-summary-list__row {
+	display: flex;
+	flex-direction: column;
+	.govuk-summary-list__key {
+		width: 100%;
+		border-bottom: none;
+		margin-bottom: 0;
+		padding-bottom: 5px;
+	}
+	.govuk-summary-list__value {
+		width: 100%;
+		border-bottom: none;
+		margin-top: 0;
+		padding-top: 5px;
+	}
 }

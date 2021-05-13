@@ -3,7 +3,7 @@
 {% set area = data.area %}
 
 {% block pageTitle %}
-    {{ area.type | sentenceCase }} area information
+    {{ area.label }} - {{ area.type }} area
 {% endblock %}
 
 {% block beforeContent %}
@@ -28,7 +28,7 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-                <h1 class="govuk-heading-xl">{{ area.type | sentenceCase }} area information</h1>
+                <h1 class="govuk-heading-xl">{{ area.label }} - {{ area.type }} area</h1>
 
         </div>
 
@@ -36,9 +36,121 @@
 
 <div class="govuk-grid-row">
 
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-two-thirds">
+
+        <!--
+            {% set detailsContentHTML %}
+                
+                <figure>
+                    <div id="map"></div>
+                    <figcaption>
+                        {{ 'Map of ' + area.label + ' ' + area.type + ' area' }}
+                    </figcaption>
+                </figure>
+
+            {% endset %}
+            
+            {{ govukDetails({
+                summaryText: 'View a map of ' + area.label + ' ' + area.type + ' area',
+                html: detailsContentHTML
+            }) }}
+
+            -->
+
+                {% if area.type == 'warning' %}
+
+                    <div class="app-notification-list">
+
+                        <h2 class="govuk-heading-m">Flood warnings</h2>
+
+                        <p>No flood warnings in force or scheduled.</p>
+
+                        <ul class="govuk-list">
+                            {{ govukButton ({
+                                text: 'Issue a new flood warning',
+                                href: 'severity'
+                            }) }}
+                            <li><a href="#">3 draft flood warnings</a></li>
+                            <li><a href="#">View past flood warnings</a></li>
+                        </ul>
+                    
+                    </div>
+
+                    <div class="app-notification-list">
+
+                        <h2 class="govuk-heading-m">Rapid response flood warnings</h2>
+
+                        <p>No rapid response flood warnings in force or scheduled.</p>
+
+                        <ul class="govuk-list">
+                            {{ govukButton ({
+                                text: 'Issue a new rapid response flood warning',
+                                href: 'severity'
+                            }) }}
+                            <li><a href="#">1 draft rapid response flood warning</a></li>
+                            <li><a href="#">View past rapid response flood warnings</a></li>
+                        </ul>
+                    
+                    </div>
+
+                    <!--div class="app-notification-list">
+
+                        <h2 class="govuk-heading-m">Groundwater flood warnings</h2>
+
+                        <p>None in force</p>
+
+                        <ul class="govuk-list">
+                            <li><a href="severity">Add new groundwater flood warning</a></li>
+                            <li><a href="#">View past groundwater flood warnings</a></li>
+                        </ul>
+                    
+                    </div-->
+
+                {% endif %}
+
+                {% if area.type == 'alert' %}
+
+                    <div class="app-notification-list">
+
+                        <h2 class="govuk-heading-m">Flood alerts</h2>
+
+                        <p>No flood alerts in force or scheduled.</p>
+
+                        <ul class="govuk-list">
+                            {{ govukButton ({
+                                text: 'Issue a new flood alert',
+                                href: 'message-content'
+                            }) }}
+                            <li><a href="#">3 draft flood alerts</a></li>
+                            <li><a href="#">View past flood alerts</a></li>
+                        </ul>
+                    
+                    </div>
+
+                    <!--div class="app-notification-list">
+
+                        <h2 class="govuk-heading-m">Groundwater flood alerts</h2>
+
+                        <p>None in force</p>
+
+                        <ul class="govuk-list">
+                            <li><a href="message-content">Add new groundwater flood alert</a></li>
+                            <li><a href="#">1 draft groundwater flood alert</a></li>
+                            <li><a href="#">View past groundwater flood alerts</a></li>
+                        </ul>
+                    
+                    </div-->
+
+                {% endif %}
+            
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+                <h2 class="govuk-heading-m">{{ area.type | sentenceCase }} area information</h2>
 
                 {{ govukSummaryList ({
+                    classes: 'app-summary-list-vertical',
                     rows: [
                         {
                             key: {
@@ -71,29 +183,10 @@
                             value: {
                                 text: area.description
                             }
-                        },
-                        {
-                            key: {
-                                text: 'Quick dial number'
-                            },
-                            value: {
-                                text: '303115'
-                            }
                         }
                     }
                 }) }}
 
-        </div>
-
-        <div class="govuk-grid-column-one-half">
-
-            <figure>
-                <div id="map"></div>
-                <figcaption>
-                    {{ 'Map of ' + area.label + ' ' + area.type + ' area' }}
-                </figcaption>
-            </figure>
-            
         </div>
 
 </div>
@@ -103,91 +196,6 @@
         <div class="govuk-grid-column-full">
 
             <hr class="govuk-section-break govuk-section-break--xl">
-
-        </div>
-
-</div>
-
-<div class="govuk-grid-row">
-
-        <div class="govuk-grid-column-two-thirds">
-
-            {% if area.type == 'warning' %}
-
-                <div class="app-notification-list">
-
-                    <h2 class="govuk-heading-m">Flood warnings</h2>
-
-                    <p>None in force</p>
-
-                    <ul class="govuk-list">
-                        <li><a href="severity">Add new flood warning</a></li>
-                        <li><a href="#">3 draft flood warnings</a></li>
-                        <li><a href="#">View past flood warnings</a></li>
-                    </ul>
-                
-                </div>
-
-                <div class="app-notification-list">
-
-                    <h2 class="govuk-heading-m">Rapid response flood warnings</h2>
-
-                    <p>None in force</p>
-
-                    <ul class="govuk-list">
-                        <li><a href="severity">Add new rapid response flood warning</a></li>
-                        <li><a href="message-content">1 draft rapid response flood warning</a></li>
-                        <li><a href="#">View past rapid response flood warnings</a></li>
-                    </ul>
-                
-                </div>
-
-                <div class="app-notification-list">
-
-                    <h2 class="govuk-heading-m">Groundwater flood warnings</h2>
-
-                    <p>None in force</p>
-
-                    <ul class="govuk-list">
-                        <li><a href="severity">Add new groundwater flood warning</a></li>
-                        <li><a href="#">View past groundwater flood warnings</a></li>
-                    </ul>
-                
-                </div>
-
-            {% endif %}
-
-            {% if area.type == 'alert' %}
-
-                <div class="app-notification-list">
-
-                    <h2 class="govuk-heading-m">Flood alerts</h2>
-
-                    <p>None in force</p>
-
-                    <ul class="govuk-list">
-                        <li><a href="message-content">Add new flood alert</a></li>
-                        <li><a href="#">3 draft flood alerts</a></li>
-                        <li><a href="#">View past flood alerts</a></li>
-                    </ul>
-                
-                </div>
-
-                <div class="app-notification-list">
-
-                    <h2 class="govuk-heading-m">Groundwater flood alerts</h2>
-
-                    <p>None in force</p>
-
-                    <ul class="govuk-list">
-                        <li><a href="message-content">Add new groundwater flood alert</a></li>
-                        <li><a href="#">1 draft groundwater flood alert</a></li>
-                        <li><a href="#">View past groundwater flood alerts</a></li>
-                    </ul>
-                
-                </div>
-
-            {% endif %}
 
         </div>
 
@@ -239,6 +247,10 @@
                 'line-width': 2
             }
         });
+    });
+
+    details.addEventListener("toggle", event => {
+        map.resize()
     });
 
   </script>
