@@ -1,0 +1,209 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Check the {{ area.type }}
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form action="reminder">
+
+                <h1 class="govuk-heading-xl">Check the {{ area.type }}</h1>
+
+                {% set spokenMessageHTML %}
+                    <p><b>Preview</b></p>
+                    <audio id="preview-player" controls>
+                        <source src="/tmp/spoken_preview.mp3" type="audio/mpeg">
+                    </audio>
+                {% endset %}
+
+                {% set urgentSpokenMessageHTML %}
+                    <p><b>Preview</b></p>
+                    <audio id="preview-player" controls>
+                        <source src="/tmp/urgent_preview.mp3" type="audio/mpeg">
+                    </audio>
+                {% endset %}
+
+                {{ govukSummaryList ({
+                    rows: [
+                        {
+                            key: {
+                                text: 'Message'
+                            },
+                            value: {
+                                text: data['message-content']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'message-content?fromCheck=true',
+                                        visuallyHiddenText: 'message content'
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Spoken message'
+                            },
+                            value: {
+                                html: spokenMessageHTML
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'spoken-message?fromCheck=true',
+                                        visuallyHiddenText: 'spoken message content'
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Add urgent telephone message?'
+                            },
+                            value: {
+                                text: data['add-urgent-message']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'add-urgent-message?fromCheck=true',
+                                        visuallyHiddenText: 'whether to add an urgent telephone message'
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Urgent telephone message'
+                            },
+                            value: {
+                                html: urgentSpokenMessageHTML
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'urgent-spoken-message?fromCheck=true',
+                                        visuallyHiddenText: 'urgent spoken message content'
+                                    }
+                                ]
+                            }
+                        } if data['add-urgent-message'] == 'Yes'
+                    }
+                }) }}
+
+                {% set scheduleHTML %}
+                    
+                    {{ govukDateInput ({
+                        id: 'schedule-date',
+                        namePrefix: 'schedule-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Send date',
+                                isPageHeading: false,
+                                classes: 'govuk-fieldset__legend--s'
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 14 8 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: 13
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: 5
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value: 2021
+                            }
+                        ]
+                    }) }}
+
+                    {{ govukInput ({
+                        id: 'schedule-time',
+                        name: 'schedule-time',
+                        value: data['schedule-time'] if data['schedule-time'] else '',
+                        classes: 'govuk-input--width-10',
+                        hint: {
+                            text: 'Enter time in 24 hour format. For example, 15:00.'
+                        },
+                        label: {
+                            text: 'Send time',
+                            classes: 'govuk-input--width-10'
+                        }
+                    }) }}
+                    
+                {% endset %}
+
+                {{ govukRadios ({
+                    idPrefix: 'send-option',
+                    name: 'send-option',
+                    fieldset: {
+                        legend: {
+                            text: 'What would you like to do with this ' + area.type + '?',
+                            isPageHeading: true,
+                            classes: 'govuk-fieldset__legend--s'
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'Send ' + area.type + ' now',
+                            value: 'Send',
+                            checked: true if data['send-option'] == 'Send'
+                        },
+                        {
+                            text: 'Shedule ' + area.type + ' to send later',
+                            value: 'Shedule',
+                            checked: true if data['send-option'] == 'Shedule',
+                            conditional: {
+                                html: scheduleHTML
+                            }
+                        },
+                        {
+                            text: 'Save as a draft to the target area',
+                            value: 'Draft',
+                            checked: true if data['send-option'] == 'Save as draft'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

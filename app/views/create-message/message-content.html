@@ -1,7 +1,9 @@
-{% extends 'layout.html' %}
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
 
 {% block pageTitle %}
-    Warning message
+    {{ area.type | sentenceCase }} message
 {% endblock %}
 
 {% block beforeContent %}
@@ -21,9 +23,15 @@
 
         <div class="govuk-grid-column-two-thirds">
 
+            {% if data.fromCheck %}
+            <form action="check">
+            {% else %}
             <form action="spoken-message">
+            {% endif %}
 
-                <h1 class="govuk-heading-xl">Warning message</h1>
+                <h1 class="govuk-heading-xl">{{ area.type | sentenceCase }} message</h1>
+
+                <p>This message will included in the email and be made available on flood information websites.</p>
 
                 {{ govukCharacterCount ({
                     id: 'message-content',

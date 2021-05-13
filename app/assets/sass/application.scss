@@ -16,6 +16,11 @@ $govuk-assets-path: '/govuk/assets/';
 
 // Add extra styles here, or re-organise the Sass files in whichever way makes most sense to you
 
+* {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+		sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+}
+
 a.app-link-destructive {
 	color: govuk-colour('red');
 	&:visited {
@@ -27,4 +32,12 @@ a.app-link-destructive {
 	position: -webkit-sticky;
 	position: sticky;
 	top: 40px;
+}
+
+#map {
+	height: 25em;
+}
+
+.app-notification-list {
+	margin-bottom: 60px;
 }

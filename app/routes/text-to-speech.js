@@ -8,6 +8,7 @@ const Fs = require('fs')
 
 router.post('/generate', (req, res) => {
 	const inputText = req.body.text
+	const fileName = req.body.fileName
 
 	const Polly = new AWS.Polly({
 		signatureVersion: 'v4',
@@ -26,7 +27,7 @@ router.post('/generate', (req, res) => {
 			res.send(err)
 		} else {
 			if (data.AudioStream instanceof Buffer) {
-				const url = '/tmp/speech_output.mp3'
+				const url = `/tmp/${fileName || 'message_preview'}.mp3`
 				Fs.writeFile(process.cwd() + url, data.AudioStream, function (err) {
 					if (err) {
 						return console.log(err)

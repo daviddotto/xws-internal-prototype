@@ -1,18 +1,7 @@
-{% extends 'layout.html' %}
+{% extends 'layout_unbranded.html' %}
 
 {% block pageTitle %}
     Enter an area code
-{% endblock %}
-
-{% block beforeContent %}
-
-    {{ super() }}
-
-    {{ govukBackLink ({
-        text: 'Back',
-        href: 'javascript:history.back()'
-    }) }}
-
 {% endblock %}
 
 {% block content %}
@@ -21,7 +10,7 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-            <form method="post">
+            <form method="post" action="/area/search">
 
                 <h1 class="govuk-heading-xl">Enter an area code</h1>
 

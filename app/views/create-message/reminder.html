@@ -1,0 +1,117 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Set a reminder to update this {{ area.type }}?
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+{{ 'area-details' | redirect | safe if data['send-option'] == 'Draft' }}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form action="confirmation">
+
+                {% set reminderHTML %}
+                    
+                    {{ govukDateInput ({
+                        id: 'reminder-date',
+                        namePrefix: 'reminder-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Update or removal date',
+                                isPageHeading: false,
+                                classes: 'govuk-fieldset__legend--s'
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 14 8 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: 13
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: 5
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value: 2021
+                            }
+                        ]
+                    }) }}
+
+                    {{ govukInput ({
+                        id: 'reminder-time',
+                        name: 'reminder-time',
+                        value: data['reminder-time'] if data['reminder-time'] else '',
+                        classes: 'govuk-input--width-10',
+                        hint: {
+                            text: 'Enter time in 24 hour format. For example, 15:00.'
+                        },
+                        label: {
+                            text: 'Update or removal time',
+                            classes: 'govuk-input--width-10'
+                        }
+                    }) }}
+                    
+                {% endset %}
+
+                {{ govukRadios ({
+                    idPrefix: 'set-reminder',
+                    name: 'set-reminder',
+                    fieldset: {
+                        legend: {
+                            text: 'Set a reminder to update or remove this ' + area.type + '?',
+                            isPageHeading: true,
+                            classes: 'govuk-fieldset__legend--xl'
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'Yes',
+                            value: 'Yes',
+                            checked: true if data['set-reminder'] == 'Yes',
+                            conditional: {
+                                html: reminderHTML
+                            }
+                        },
+                        {
+                            text: 'No, the update or removal will be managed manually',
+                            value: 'No',
+                            checked: true if data['set-reminder'] == 'No'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: data['send-option'] + ' ' + area.type
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Confirmation
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form method="post">
+
+
+                {% if data['send-option'] == 'Send' %}
+                    {{ govukPanel({
+                        titleText: area.type | sentenceCase + ' sent',
+                        html: 'Your reference number<br><strong>HDJ2123F</strong>'
+                    }) }}
+                {% else %}
+                    {{ govukPanel({
+                        titleText: area.type | sentenceCase + ' scheduled',
+                        html: 'Your reference number<br><strong>HDJ2123F</strong>'
+                    }) }}
+                {% endif %}
+
+                <p>
+                    We will send an email to xxxx@xxxx.xxx when the message has sent to all subscribers in the area.
+                </p>
+
+                <p>
+                    You can close this window now.
+                </p>
+
+                {{ govukButton ({
+                    html: 'Return to target area',
+                    href: 'area-details'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
