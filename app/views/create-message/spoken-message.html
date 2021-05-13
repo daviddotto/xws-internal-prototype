@@ -19,13 +19,33 @@
 
 {% block content %}
 
+{% if data.fromCheck %}
+<form action="check">
+{% else %}
+<form action="add-urgent-message">
+{% endif %}
+
 <div class="govuk-grid-row">
 
     <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-xl">Spoken message content</h1>
+        <h1 class="govuk-heading-xl">Message content</h1>
 
-        <p>This message will be played on the Floodline service (IVR) for users who would like to listen to the {{ area.type }}.</p>
+        <h2>Alert message</h2>
+
+        <p>This message will included in the email and be made available on flood information websites.</p>
+
+        {{ govukCharacterCount ({
+            id: 'message-content',
+            name: 'message-content',
+            maxlength: '1500',
+            rows: 15,
+            value: data['message-content'],
+            label: {
+                text: 'Message content',
+                classes: 'govuk-visually-hidden'
+            }
+        }) }}
 
     </div>
 
@@ -35,11 +55,10 @@
 
     <div class="govuk-grid-column-two-thirds">
 
-        {% if data.fromCheck %}
-        <form action="check">
-        {% else %}
-        <form action="add-urgent-message">
-        {% endif %}
+            <h2>Spoken message content</h2>
+
+            <p>This message will be played on the Floodline service (IVR) for users who would like to listen to the {{ area.type }}.</p>
+
 
             {{ govukCharacterCount ({
                 id: 'spoken-message',
@@ -152,8 +171,6 @@
                 html: 'Continue'
             }) }}
 
-        </form>
-
     </div>
 
     <div class="govuk-grid-column-one-third sticky-column">
@@ -180,6 +197,8 @@
     </div>
 
 </div>
+
+</form>
 
 {% endblock %}
 

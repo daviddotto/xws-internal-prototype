@@ -23,6 +23,8 @@
 
         <div class="govuk-grid-column-two-thirds">
 
+            {{ 'spoken-message' | redirect | safe }}
+
             {% if data.fromCheck %}
             <form action="check">
             {% else %}
