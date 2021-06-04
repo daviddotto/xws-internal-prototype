@@ -6,17 +6,14 @@
     Check the {{ area.type }}
 {% endblock %}
 
-{% block contextBanner %}
-
-    {{ targetAreaBanner({
-        area: area
-    }) }}
-
-{% endblock %}
-
 {% block beforeContent %}
 
     {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
 
 {% endblock %}
 
@@ -33,14 +30,14 @@
                 {% set spokenMessageHTML %}
                     <p><b>Preview</b></p>
                     <audio id="preview-player" controls>
-                        <source type="audio/mpeg">
+                        <source src="/tmp/spoken_preview.mp3" type="audio/mpeg">
                     </audio>
                 {% endset %}
 
                 {% set urgentSpokenMessageHTML %}
                     <p><b>Preview</b></p>
-                    <audio id="urgent-preview-player" controls>
-                        <source type="audio/mpeg">
+                    <audio id="preview-player" controls>
+                        <source src="/tmp/urgent_preview.mp3" type="audio/mpeg">
                     </audio>
                 {% endset %}
 
@@ -75,7 +72,7 @@
                                 items: [
                                     {
                                         text: 'Change message',
-                                        href: 'spoken-message?fromCheck=true',
+                                        href: 'message-content?fromCheck=true',
                                         visuallyHiddenText: 'message content'
                                     }
                                 ]
@@ -227,20 +224,4 @@
 
 </div>
 
-{% endblock %}
-
-{% block pageScripts %}
-    
-    <script>
-    
-        $.post( '/text-to-speech/generate-ivr-message', function( url ) {
-            $( "#preview-player" ).attr( 'src', url );
-        })
-
-        $.post( '/text-to-speech/generate-urgent-message', function( url ) {
-            $( "#urgent-preview-player" ).attr( 'src', url );
-        })
-    
-    </script>
-    
 {% endblock %}

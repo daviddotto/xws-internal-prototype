@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 
+{% from "./components/target-area-banner.njk" import targetAreaBanner %}
+
 {% block headIcons %}
   <link rel="shortcut icon" href="{{ asset_path }}images/unbranded.ico?0.18.3" type="image/x-icon" />
 {% endblock %}
@@ -15,8 +17,8 @@
 
 {% block header %}
 
-<header class="govuk-header " role="banner" data-module="govuk-header">
-  <div class="govuk-header__container govuk-width-container" style="border-bottom: none; padding-bottom: 10px;">
+<header class="govuk-header " role="banner" data-module="govuk-header" style="border-bottom: none;"">
+  <div class="govuk-header__container govuk-width-container" style="border-bottom: none; margin-bottom: 0;">
     <div class="govuk-header__logo">
       <a href="/" class="govuk-header__link govuk-header__link--homepage">
         <span class="govuk-header__logotype">
@@ -39,6 +41,8 @@
     
   </div>
 </header>
+
+{% block contextBanner %}{% endblock %}
 
 {% endblock %}
 {% block footer %}

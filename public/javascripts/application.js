@@ -10,3 +10,5 @@ $(document).ready(function () {
 })
 
 $('a').addClass('govuk-link--no-visited-state')
+
+$('.govuk-footer__copyright-logo').remove()

@@ -68,3 +68,14 @@ a.app-link-destructive {
 		text-align: left;
 	}
 }
+
+.app-context-banner {
+	box-sizing: border-box;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: #1d70b8;
+	color: white !important;
+	* {
+		color: white !important;
+	}
+}

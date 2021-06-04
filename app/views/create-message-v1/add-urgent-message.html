@@ -1,17 +1,9 @@
-{% extends 'layout_unbranded.html' %}
+{% extends 'layout.html' %}
 
 {% set area = data.area %}
 
 {% block pageTitle %}
     Add an urgent message to telephone call?
-{% endblock %}
-
-{% block contextBanner %}
-
-    {{ targetAreaBanner({
-        area: area
-    }) }}
-
 {% endblock %}
 
 {% block beforeContent %}

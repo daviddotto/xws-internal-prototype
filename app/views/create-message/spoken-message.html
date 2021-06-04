@@ -3,7 +3,15 @@
 {% set area = data.area %}
 
 {% block pageTitle %}
-    Spoken message content
+    Message content
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area
+    }) }}
+
 {% endblock %}
 
 {% block beforeContent %}
@@ -102,6 +110,16 @@
                     }
                 }) }}
 
+                <div class="preview-pronunciation-container govuk-!-margin-bottom-4">
+                    
+                    <h4 class="govuk-heading-s">Pronunciation preview</h4>
+
+                    <audio id="pronunciation-preview-player" controls>
+                        <source type="audio/mpeg">
+                    </audio>
+
+                </div>
+
                 {{ govukRadios ({
                     idPrefix: 'adjustment-save',
                     name: 'adjustment-save',
@@ -163,7 +181,7 @@
 
         <div class="audio-container govuk-!-margin-bottom-4" style="display:block;">
 
-            <h2 id="preview-header" class="govuk-heading-s">Preview</h2>
+            <h2 id="preview-header" class="govuk-heading-s">Preview spoken message content</h2>
 
             <audio id="preview-player" controls>
                 <source src="/public/audio/preview_message.mp3" type="audio/mpeg">
@@ -193,7 +211,7 @@
                 // Preview is up-to-date
                 $('#refresh-preview-button').prop('disabled', true)
                 $('#refresh-preview-button').text('Preview is ready')
-                $('#preview-header').text('Preview')
+                $('#preview-header').text('Preview spoken message content')
                 $('#refresh-preview-button').hide()
                 $('.audio-container').show()
             } else {
@@ -257,6 +275,26 @@
                     $( "#preview-player" ).attr( 'src', url );
                     adaptRefreshButton()
                 })
+            })
+        }
+
+        var typingTimer
+        var doneTypingInterval = 200
+        var $pronunciationInput = $('input#adjustment-pronunciation')
+
+        $pronunciationInput.on('keyup', function () {
+        clearTimeout(typingTimer)
+            typingTimer = setTimeout(doneTypingPronunciation, doneTypingInterval);
+        })
+
+        $pronunciationInput.on('keydown', function () {
+            clearTimeout(typingTimer)
+        })
+
+        function doneTypingPronunciation () {
+            $.post( '/text-to-speech/generate', { text : $pronunciationInput.val(), fileName: 'pronunciation_preview' }, function( url ) {
+                $( "#pronunciation-preview-player" ).attr( 'src', url );
+                adaptRefreshButton()
             })
         }
 

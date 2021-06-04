@@ -3,15 +3,7 @@
 {% set area = data.area %}
 
 {% block pageTitle %}
-    Urgent spoken message content
-{% endblock %}
-
-{% block contextBanner %}
-
-    {{ targetAreaBanner({
-        area: area
-    }) }}
-
+    Spoken message content
 {% endblock %}
 
 {% block beforeContent %}
@@ -27,15 +19,33 @@
 
 {% block content %}
 
-{{ 'check' | redirect | safe if (data['add-urgent-message'] != 'Yes') }}
+{% if data.fromCheck %}
+<form action="check">
+{% else %}
+<form action="add-urgent-message">
+{% endif %}
 
 <div class="govuk-grid-row">
 
     <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-xl">Urgent message to be added to telephone calls</h1>
+        <h1 class="govuk-heading-xl">Message content</h1>
 
-        <p>This short message will be added to the standard message played to users who have asked to get flood {{ area.type }}s by telephone.</p>
+        <h2>{{ area.type | sentenceCase }} message</h2>
+
+        <p>This message will included in the email and be made available on flood information websites.</p>
+
+        {{ govukCharacterCount ({
+            id: 'message-content',
+            name: 'message-content',
+            maxlength: '1500',
+            rows: 8,
+            value: data['message-content'],
+            label: {
+                text: 'Message content',
+                classes: 'govuk-visually-hidden'
+            }
+        }) }}
 
     </div>
 
@@ -45,14 +55,17 @@
 
     <div class="govuk-grid-column-two-thirds">
 
-        <form action="check">
+            <h2>Spoken message content</h2>
+
+            <p>This message will be played on the Floodline service (IVR) for users who would like to listen to the {{ area.type }}.</p>
+
 
             {{ govukCharacterCount ({
-                id: 'urgent-spoken-message',
-                name: 'urgent-spoken-message',
-                maxlength: '300',
-                rows: 4,
-                value: data['urgent-spoken-message'] if data['urgent-spoken-message'],
+                id: 'spoken-message',
+                name: 'spoken-message',
+                maxlength: '1500',
+                rows: 8,
+                value: data['spoken-message'] if data['spoken-message'] else data['message-content'] ,
                 label: {
                     text: 'Spoken message content',
                     classes: 'govuk-visually-hidden'
@@ -88,16 +101,6 @@
                         text: 'Pronunciation'
                     }
                 }) }}
-
-                <div class="preview-pronunciation-container govuk-!-margin-bottom-4">
-                    
-                    <h4 class="govuk-heading-s">Pronunciation preview</h4>
-
-                    <audio id="pronunciation-preview-player" controls>
-                        <source type="audio/mpeg">
-                    </audio>
-
-                </div>
 
                 {{ govukRadios ({
                     idPrefix: 'adjustment-save',
@@ -145,8 +148,6 @@
                 html: 'Continue'
             }) }}
 
-        </form>
-
     </div>
 
     <div class="govuk-grid-column-one-third sticky-column">
@@ -174,18 +175,20 @@
 
 </div>
 
+</form>
+
 {% endblock %}
 
 {% block pageScripts %}
     
     <script>
 
-        var currentPreviewTextTrimmed = $('textarea#urgent-spoken-message').val().trim()
+        var currentPreviewTextTrimmed = $('textarea#spoken-message').val().trim()
         var previewText = currentPreviewTextTrimmed
         var activePronunciations = []
 
         function adaptRefreshButton() {
-            const newEntryTrimmed = $('textarea#urgent-spoken-message').val().trim()
+            const newEntryTrimmed = $('textarea#spoken-message').val().trim()
             if (newEntryTrimmed == currentPreviewTextTrimmed) {
                 // Preview is up-to-date
                 $('#refresh-preview-button').prop('disabled', true)
@@ -204,7 +207,7 @@
         }
 
         function updatePronunciations() {
-            const newEntryTrimmed = $('textarea#urgent-spoken-message').val().trim()
+            const newEntryTrimmed = $('textarea#spoken-message').val().trim()
             $.post( '/text-to-speech/get-pronunciations', { text : newEntryTrimmed }, function( item ) {
                 previewText = item.text
                 activePronunciations = item.usedPronunciations
@@ -245,12 +248,12 @@
             $('#refresh-preview-button').show()
             $('#refresh-preview-button').prop('disabled', true)
             $('#refresh-preview-button').text('Loading...')
-            currentPreviewTextTrimmed = $('textarea#urgent-spoken-message').val().trim()
+            currentPreviewTextTrimmed = $('textarea#spoken-message').val().trim()
             $.post( '/text-to-speech/get-pronunciations', { text : currentPreviewTextTrimmed }, function( item ) {
                 previewText = item.text
                 activePronunciations = item.usedPronunciations
                 refreshPronunciationList()
-                $.post( '/text-to-speech/generate', { text : previewText, fileName: 'urgent_preview' }, function( url ) {
+                $.post( '/text-to-speech/generate', { text : previewText, fileName: 'spoken_preview' }, function( url ) {
                     $( "#preview-player" ).attr( 'src', url );
                     adaptRefreshButton()
                 })
@@ -259,8 +262,8 @@
 
         function saveInput() {
             $.post( '/text-to-speech/save-input', { 
-                text : $('textarea#urgent-spoken-message').val().trim(), 
-                name: 'urgent-spoken-message'
+                text : $('textarea#spoken-message').val().trim(), 
+                name: 'spoken-message'
             })
         }
 
@@ -286,7 +289,7 @@
             }
         })
 
-        $('textarea#urgent-spoken-message').on('input', function() {
+        $('textarea#spoken-message').on('input', function() {
             updatePronunciations()
             adaptRefreshButton()
             saveInput()
@@ -296,33 +299,6 @@
             e.preventDefault()
             updatePreview()
         })
-
-        var typingTimer
-        var doneTypingInterval = 200
-        var $pronunciationInput = $('input#adjustment-pronunciation')
-
-        $pronunciationInput.on('keyup', function () {
-        clearTimeout(typingTimer)
-            typingTimer = setTimeout(doneTypingPronunciation, doneTypingInterval);
-        })
-
-        $pronunciationInput.on('keydown', function () {
-            clearTimeout(typingTimer)
-        })
-
-        function doneTypingPronunciation () {
-            $.post( '/text-to-speech/generate', { text : $pronunciationInput.val(), fileName: 'pronunciation_preview' }, function( url ) {
-                $( "#pronunciation-preview-player" ).attr( 'src', url );
-                adaptRefreshButton()
-            })
-        }
-
-        function saveInput() {
-            $.post( '/text-to-speech/save-input', { 
-                text : $('textarea#spoken-message').val().trim(), 
-                name: 'spoken-message'
-            })
-        }
 
         adaptRefreshButton()
         updatePronunciations()

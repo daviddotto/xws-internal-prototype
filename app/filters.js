@@ -335,6 +335,19 @@ module.exports = function (env) {
 		return area.notation.includes('FW')
 	}
 
+	filters.areaType = (area) => {
+		let typeURLs = area.type
+
+		for (const url of typeURLs) {
+			if (url.includes('FloodWarningArea')) {
+				return 'warning'
+			}
+			if (url.includes('FloodAlertArea')) {
+				return 'alert'
+			}
+		}
+	}
+
 	/* ------------------------------------------------------------------
     add your methods to the filters obj below this comment block:
     @example:

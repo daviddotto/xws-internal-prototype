@@ -1,0 +1,38 @@
+{% extends 'layout_unbranded.html' %}
+
+{% block pageTitle %}
+    Enter an area code
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form method="post" action="/area/search">
+
+                <h1 class="govuk-heading-xl">Enter a target area code</h1>
+
+                {{ govukInput ({
+                    id: 'area-code',
+                    name: 'area-code',
+                    value: data['area-code'] if data['area-code'] else '',
+                    classes: 'govuk-input--width-10',
+                    label: {
+                        text: 'Area code',
+                        classes: 'govuk-input--width-10 govuk-visually-hidden'
+                    }
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

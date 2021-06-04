@@ -1,0 +1,27 @@
+{% macro targetAreaBanner(props) %}
+    {% set area = props.area %}
+
+    <div class="app-context-banner">
+
+        <div class="govuk-width-container app-context-banner">
+
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <p style="margin-bottom: 0;">
+                        <b><a href="#">{{ area.eaAreaName }}</a> ›</b>
+                        {{ area.label }} ({{ area.notation }})
+                        {% if props.prefix %}
+                        › {{ props.prefix }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                    
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endmacro %}

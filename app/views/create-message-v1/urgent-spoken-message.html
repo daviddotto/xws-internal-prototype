@@ -6,14 +6,6 @@
     Urgent spoken message content
 {% endblock %}
 
-{% block contextBanner %}
-
-    {{ targetAreaBanner({
-        area: area
-    }) }}
-
-{% endblock %}
-
 {% block beforeContent %}
 
     {{ super() }}
@@ -88,16 +80,6 @@
                         text: 'Pronunciation'
                     }
                 }) }}
-
-                <div class="preview-pronunciation-container govuk-!-margin-bottom-4">
-                    
-                    <h4 class="govuk-heading-s">Pronunciation preview</h4>
-
-                    <audio id="pronunciation-preview-player" controls>
-                        <source type="audio/mpeg">
-                    </audio>
-
-                </div>
 
                 {{ govukRadios ({
                     idPrefix: 'adjustment-save',
@@ -296,33 +278,6 @@
             e.preventDefault()
             updatePreview()
         })
-
-        var typingTimer
-        var doneTypingInterval = 200
-        var $pronunciationInput = $('input#adjustment-pronunciation')
-
-        $pronunciationInput.on('keyup', function () {
-        clearTimeout(typingTimer)
-            typingTimer = setTimeout(doneTypingPronunciation, doneTypingInterval);
-        })
-
-        $pronunciationInput.on('keydown', function () {
-            clearTimeout(typingTimer)
-        })
-
-        function doneTypingPronunciation () {
-            $.post( '/text-to-speech/generate', { text : $pronunciationInput.val(), fileName: 'pronunciation_preview' }, function( url ) {
-                $( "#pronunciation-preview-player" ).attr( 'src', url );
-                adaptRefreshButton()
-            })
-        }
-
-        function saveInput() {
-            $.post( '/text-to-speech/save-input', { 
-                text : $('textarea#spoken-message').val().trim(), 
-                name: 'spoken-message'
-            })
-        }
 
         adaptRefreshButton()
         updatePronunciations()

@@ -1,17 +1,7 @@
-{% extends 'layout_unbranded.html' %}
-
-{% set area = data.area %}
+{% extends 'layout.html' %}
 
 {% block pageTitle %}
     Warning severity
-{% endblock %}
-
-{% block contextBanner %}
-
-    {{ targetAreaBanner({
-        area: area
-    }) }}
-
 {% endblock %}
 
 {% block beforeContent %}
@@ -47,18 +37,16 @@
                             classes: 'govuk-fieldset__legend--xl'
                         }
                     },
-                    hint: {
-                            text: 'Only select ‘Severe warning’ if it has been requested by a Flood Warning Duty Officer (FWDO) otherwise, select ‘Warning’.'
-                    },
                     items: [
                         {
                             text: 'Warning',
                             value: 'Warning',
-                            checked: true if data['severity'] != 'Severe warning'
+                            checked: true if data['severity'] == 'Warning'
                         },
                         {
                             text: 'Severe warning',
-                            value: 'Severe warning'
+                            value: 'Severe warning',
+                            checked: true if data['severity'] == 'Severe warning'
                         }
                     ]
                 }) }}
