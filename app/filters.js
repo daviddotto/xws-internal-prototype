@@ -92,6 +92,15 @@ module.exports = function (env) {
 		return latestDate
 	}
 
+	filters.getTime = (dateString) => {
+		const date = new Date(dateString)
+		return date.toLocaleString('en-US', {
+			hour: 'numeric',
+			minute: 'numeric',
+			hour12: false,
+		})
+	}
+
 	filters.getDay = (dateString) => {
 		const date = new Date(dateString)
 		return date.getDate()
@@ -346,6 +355,12 @@ module.exports = function (env) {
 				return 'alert'
 			}
 		}
+	}
+
+	filters.dateAddingHours = (dateString, hours) => {
+		var date = new Date(dateString)
+		date.setTime(date.getTime() + hours * 60 * 60 * 1000)
+		return date
 	}
 
 	/* ------------------------------------------------------------------

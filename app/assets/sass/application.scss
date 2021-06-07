@@ -79,3 +79,16 @@ a.app-link-destructive {
 		color: white !important;
 	}
 }
+
+.app-email-preview-context {
+	color: $govuk-secondary-text-colour !important;
+	* {
+		color: $govuk-secondary-text-colour !important;
+	}
+}
+
+.app-email-message-preview {
+	padding: 10px 10px 10px 40px;
+	border-left: $govuk-brand-colour 4px solid;
+	margin-bottom: 40px;
+}

@@ -29,6 +29,10 @@
 
 {{ 'area-details' | redirect | safe if data['send-option'] == 'Draft' }}
 
+{% set recommendedHoursBeforeUpdate = (8 if data['severity'] != 'Severe warning' else 6) if area.type == 'warning' else 12 %}
+
+{% set recommendedDate = data.currentDate | dateAddingHours(recommendedHoursBeforeUpdate) %}
+
 <div class="govuk-grid-row">
 
         <div class="govuk-grid-column-two-thirds">
@@ -43,8 +47,7 @@
                         fieldset: {
                             legend: {
                                 text: 'Update or removal date',
-                                isPageHeading: false,
-                                classes: 'govuk-fieldset__legend--s'
+                                isPageHeading: false
                             }
                         },
                         hint: {
@@ -54,60 +57,91 @@
                             {
                                 classes: 'govuk-input--width-2',
                                 name: 'day',
-                                value: 13
+                                value: recommendedDate | getDay
                             },
                             {
                                 classes: 'govuk-input--width-2',
                                 name: 'month',
-                                value: 5
+                                value: recommendedDate | getMonth
                             },
                             {
                                 classes: 'govuk-input--width-4',
                                 name: 'year',
-                                value: 2021
+                                value:  recommendedDate | getYear
                             }
                         ]
                     }) }}
+                    
 
                     {{ govukInput ({
                         id: 'reminder-time',
                         name: 'reminder-time',
                         value: data['reminder-time'] if data['reminder-time'] else '',
-                        classes: 'govuk-input--width-10',
+                        classes: 'govuk-input--width-5',
                         hint: {
-                            text: 'Enter time in 24 hour format. For example, 15:00.'
+                            text: 'Use a 24-hour format. For example, 15:00.'
                         },
                         label: {
-                            text: 'Update or removal time',
-                            classes: 'govuk-input--width-10'
-                        }
+                            text: 'Update or removal time'
+                        },
+                        value: recommendedDate | getTime
                     }) }}
                     
                 {% endset %}
 
+                {% set numberOfHoursHTML %}
+
+                    {{ govukInput ({
+                        id: 'reminder-hours',
+                        name: 'reminder-hours',
+                        value: data['reminder-hours'] if data['reminder-hours'] else '',
+                        classes: 'govuk-input--width-2',
+                        label: {
+                            text: 'Number of hours after issue'
+                        },
+                        value: recommendedHoursBeforeUpdate
+                    }) }}
+
+                {% endset %}
+
                 {{ govukRadios ({
-                    idPrefix: 'set-reminder',
-                    name: 'set-reminder',
+                    idPrefix: 'reminder-option',
+                    name: 'reminder-option',
                     fieldset: {
                         legend: {
-                            text: 'Set a reminder to update or remove this ' + area.type + '?',
-                            isPageHeading: true,
+                            text: 'When should this ' + area.type  + ' be updated or removed?',
+                            isPageHeading: false,
                             classes: 'govuk-fieldset__legend--xl'
                         }
                     },
+                    hint: {
+                        text: ''
+                    },
                     items: [
                         {
-                            text: 'Yes',
-                            value: 'Yes',
-                            checked: true if data['set-reminder'] == 'Yes',
+                            text: recommendedHoursBeforeUpdate + ' hours after issue',
+                            value: recommendedHoursBeforeUpdate + ' hours after issue',
+                            checked: true if (data['reminder-option'] == (recommendedHoursBeforeUpdate + ' hours after issue')),
+                            hint: {
+                                text: '(Recommended for this type of ' + area.type + ')'
+                            },
+                            checked: true
+                        },
+                        {
+                            text: 'A chosen number of hours after issue',
+                            value: 'A chosen number of hours after issue',
+                            checked: true if data['reminder-option'] == 'A chosen number of hours after issue',
                             conditional: {
-                                html: reminderHTML
+                                html: numberOfHoursHTML
                             }
                         },
                         {
-                            text: 'No, the update or removal will be managed manually',
-                            value: 'No',
-                            checked: true if data['set-reminder'] == 'No'
+                            text: 'A chosen date and time',
+                            value: 'A chosen date and time',
+                            checked: true if data['reminder-option'] == 'A chosen date and time',
+                            conditional: {
+                                html: reminderHTML
+                            }
                         }
                     ]
                 }) }}

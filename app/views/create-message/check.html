@@ -22,6 +22,14 @@
 
 {% block content %}
 
+{% set emailPreviewHTML %}
+
+    <p>
+        {{ data['message-content'] }}
+    </p>
+
+{% endset %}
+
 <div class="govuk-grid-row">
 
         <div class="govuk-grid-column-two-thirds">
@@ -35,6 +43,7 @@
                     <audio id="preview-player" controls>
                         <source type="audio/mpeg">
                     </audio>
+                    <p>(Date and time of issuing not final)</p>
                 {% endset %}
 
                 {% set urgentSpokenMessageHTML %}
@@ -66,10 +75,10 @@
                         } if area.type == 'warning',
                         {
                             key: {
-                                text: 'Email content'
+                                text: 'Message content'
                             },
                             value: {
-                                text: data['message-content']
+                                html: emailPreviewHTML
                             },
                             actions: {
                                 items: [
@@ -143,8 +152,7 @@
                         fieldset: {
                             legend: {
                                 text: 'Send date',
-                                isPageHeading: false,
-                                classes: 'govuk-fieldset__legend--s'
+                                isPageHeading: false
                             }
                         },
                         hint: {
@@ -191,7 +199,7 @@
                     fieldset: {
                         legend: {
                             text: 'What would you like to do with this ' + area.type + '?',
-                            isPageHeading: true,
+                            isPageHeading: false,
                             classes: 'govuk-fieldset__legend--s'
                         }
                     },
