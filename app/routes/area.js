@@ -20,8 +20,8 @@ function getAreaType(area) {
 
 router.post('/search', (req, res) => {
 	const areaCodeQuery = req.session.data['area-code'] || ''
-	const successURL = '/create-message/area-details'
-	const errorURL = '/create-message/area-code'
+	const successURL = req.session.data['next-page']
+	const errorURL = req.session.data['error-page']
 
 	if (areaCodeQuery.trim().length > 0) {
 		const queryURL = `https://environment.data.gov.uk/flood-monitoring/id/floodAreas/${areaCodeQuery}`
