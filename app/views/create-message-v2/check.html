@@ -9,8 +9,7 @@
 {% block contextBanner %}
 
     {{ targetAreaBanner({
-        area: area,
-        regionURL: 'region-overview'
+        area: area
     }) }}
 
 {% endblock %}
@@ -110,6 +109,23 @@
                         },
                         {
                             key: {
+                                text: 'Add urgent message to telephone call?'
+                            },
+                            value: {
+                                text: data['add-urgent-message']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'add-urgent-message?fromCheck=true',
+                                        visuallyHiddenText: 'whether to add an urgent telephone message'
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            key: {
                                 text: 'Telephone call audio'
                             },
                             value: {
@@ -118,55 +134,64 @@
                             actions: {
                                 items: [
                                     {
-                                        text: 'Change message',
+                                        text: 'Change urgent telephone message',
                                         href: 'urgent-spoken-message?fromCheck=true',
-                                        visuallyHiddenText: 'that will be played on outbound telephone calls'
-                                    },
-                                    {
-                                        text: 'Remove',
-                                        href: 'check?add-urgent-message=No',
                                         visuallyHiddenText: 'urgent spoken message content'
                                     }
                                 ]
                             }
-                        } if data['add-urgent-message'] == 'Yes',
-                        {
-                            key: {
-                                text: 'Message for professional partners'
-                            },
-                            value: {
-                                html: data['pp-message-content']
-                            },
-                            actions: {
-                                items: [
-                                    {
-                                        text: 'Change message',
-                                        href: 'pp-message?fromCheck=true',
-                                        visuallyHiddenText: 'for professional message'
-                                    },
-                                    {
-                                        text: 'Remove',
-                                        href: 'check?add-pp-message=No',
-                                        visuallyHiddenText: 'message for professional message'
-                                    }
-                                ]
-                            }
-                        } if data['add-pp-message'] == 'Yes'
+                        } if data['add-urgent-message'] == 'Yes'
                     }
                 }) }}
-                
-                <ul class="govuk-list app-add-link-list">
-                    {% if data['add-urgent-message'] != 'Yes' %}
-                        <li>
-                            <a href="urgent-spoken-message?add-urgent-message=Yes">Add an urgent message to outbound telephone calls</a>
-                        </li>
-                    {% endif %}
-                    {% if data['add-pp-message'] != 'Yes' %}
-                        <li>
-                            <a href="pp-message?add-pp-message=Yes">Add a message for professional partners</a>
-                        </li>
-                    {% endif %}
-                </ul>
+
+                {% set scheduleHTML %}
+                    
+                    {{ govukDateInput ({
+                        id: 'schedule-date',
+                        namePrefix: 'schedule-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Send date',
+                                isPageHeading: false
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 14 8 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: 13
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: 5
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value: 2021
+                            }
+                        ]
+                    }) }}
+
+                    {{ govukInput ({
+                        id: 'schedule-time',
+                        name: 'schedule-time',
+                        value: data['schedule-time'] if data['schedule-time'] else '',
+                        classes: 'govuk-input--width-10',
+                        hint: {
+                            text: 'Enter time in 24 hour format. For example, 15:00.'
+                        },
+                        label: {
+                            text: 'Send time',
+                            classes: 'govuk-input--width-10'
+                        }
+                    }) }}
+                    
+                {% endset %}
 
                 {{ govukRadios ({
                     idPrefix: 'send-option',
@@ -180,12 +205,20 @@
                     },
                     items: [
                         {
-                            text: 'Issue ' + area.type + ' now',
+                            text: 'Send ' + area.type + ' now',
                             value: 'Send',
                             checked: true if data['send-option'] == 'Send'
                         },
                         {
-                            text: 'Save as draft and return later',
+                            text: 'Schedule ' + area.type + ' to send later',
+                            value: 'Schedule',
+                            checked: true if data['send-option'] == 'Schedule',
+                            conditional: {
+                                html: scheduleHTML
+                            }
+                        },
+                        {
+                            text: 'Save as a draft to the target area',
                             value: 'Draft',
                             checked: true if data['send-option'] == 'Save as draft'
                         }

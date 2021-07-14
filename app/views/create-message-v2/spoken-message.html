@@ -9,8 +9,7 @@
 {% block contextBanner %}
 
     {{ targetAreaBanner({
-        area: area,
-        regionURL: 'region-overview'
+        area: area
     }) }}
 
 {% endblock %}
@@ -31,7 +30,7 @@
 {% if data.fromCheck %}
 <form action="check">
 {% else %}
-<form action="check">
+<form action="add-urgent-message">
 {% endif %}
 
 <div class="govuk-grid-row">
@@ -42,7 +41,7 @@
 
         <h2>{{ area.type | sentenceCase }} message</h2>
 
-        <p>This message will be included in the email and will be made available on flood information websites.</p>
+        <p>This message will included in the email and be made available on flood information websites.</p>
 
         {{ govukCharacterCount ({
             id: 'message-content',
@@ -66,7 +65,7 @@
 
             <h2>Spoken message content</h2>
 
-            <p>This message will be played on the Floodline service (IVR).</p>
+            <p>This message will be played on the Floodline service (IVR) for users who would like to listen to the {{ area.type }}.</p>
 
 
             {{ govukCharacterCount ({

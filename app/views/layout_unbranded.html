@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% from "./components/target-area-banner.njk" import targetAreaBanner %}
+{% from "./components/region-banner.njk" import regionBanner %}
 
 {% block headIcons %}
   <link rel="shortcut icon" href="{{ asset_path }}images/unbranded.ico?0.18.3" type="image/x-icon" />
@@ -16,6 +17,14 @@
 {% endblock %}
 
 {% block header %}
+
+{% if not data.regions %}
+  
+  <script>
+    location.reload();
+  </script>
+  
+{% endif %}
 
 <header class="govuk-header " role="banner" data-module="govuk-header" style="border-bottom: none;"">
   <div class="govuk-header__container govuk-width-container" style="border-bottom: none; margin-bottom: 0;">

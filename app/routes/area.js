@@ -18,7 +18,7 @@ function getAreaType(area) {
 	}
 }
 
-router.post('/search', (req, res) => {
+router.all('/search', (req, res) => {
 	const areaCodeQuery = req.session.data['area-code'] || ''
 	const successURL = req.session.data['next-page']
 	const errorURL = req.session.data['error-page']
@@ -42,6 +42,19 @@ router.post('/search', (req, res) => {
 
 						area.polygonData = polygonData
 						area.type = getAreaType(area)
+
+						const currentRegion = req.session.data['selected-region']
+						const currentTaType = req.session.data['ta-type']
+						var areaArray = []
+						areaArray =
+							currentTaType == 'warning'
+								? req.session.data.regions[currentRegion].warningAreas
+								: req.session.data.regions[currentRegion].alertAreas
+						var matchedAreas = []
+						matchedAreas = areaArray.filter((a) => a.notation == areaCodeQuery)
+						const savedArea = matchedAreas.length > 0 ? matchedAreas[0] : {}
+
+						area = Object.assign(savedArea, area)
 
 						req.session.data.area = area
 

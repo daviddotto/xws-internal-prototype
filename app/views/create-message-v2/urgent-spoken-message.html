@@ -3,14 +3,13 @@
 {% set area = data.area %}
 
 {% block pageTitle %}
-    Message content
+    Urgent spoken message content
 {% endblock %}
 
 {% block contextBanner %}
 
     {{ targetAreaBanner({
-        area: area,
-        regionURL: 'region-overview'
+        area: area
     }) }}
 
 {% endblock %}
@@ -28,33 +27,15 @@
 
 {% block content %}
 
-{% if data.fromCheck %}
-<form action="check">
-{% else %}
-<form action="check">
-{% endif %}
+{{ 'check' | redirect | safe if (data['add-urgent-message'] != 'Yes') }}
 
 <div class="govuk-grid-row">
 
     <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-xl">Message content</h1>
+        <h1 class="govuk-heading-xl">Urgent message to be added to telephone calls</h1>
 
-        <h2>{{ area.type | sentenceCase }} message</h2>
-
-        <p>This message will be included in the email and will be made available on flood information websites.</p>
-
-        {{ govukCharacterCount ({
-            id: 'message-content',
-            name: 'message-content',
-            maxlength: '1500',
-            rows: 8,
-            value: data['message-content'],
-            label: {
-                text: 'Message content',
-                classes: 'govuk-visually-hidden'
-            }
-        }) }}
+        <p>This short message will be added to the standard message played to users who have asked to get flood {{ area.type }}s by telephone.</p>
 
     </div>
 
@@ -64,17 +45,14 @@
 
     <div class="govuk-grid-column-two-thirds">
 
-            <h2>Spoken message content</h2>
-
-            <p>This message will be played on the Floodline service (IVR).</p>
-
+        <form action="check">
 
             {{ govukCharacterCount ({
-                id: 'spoken-message',
-                name: 'spoken-message',
-                maxlength: '1500',
-                rows: 8,
-                value: data['spoken-message'] if data['spoken-message'] else data['message-content'] ,
+                id: 'urgent-spoken-message',
+                name: 'urgent-spoken-message',
+                maxlength: '300',
+                rows: 4,
+                value: data['urgent-spoken-message'] if data['urgent-spoken-message'],
                 label: {
                     text: 'Spoken message content',
                     classes: 'govuk-visually-hidden'
@@ -167,6 +145,8 @@
                 html: 'Continue'
             }) }}
 
+        </form>
+
     </div>
 
     <div class="govuk-grid-column-one-third sticky-column">
@@ -182,7 +162,7 @@
 
         <div class="audio-container govuk-!-margin-bottom-4" style="display:block;">
 
-            <h2 id="preview-header" class="govuk-heading-s">Preview spoken message content</h2>
+            <h2 id="preview-header" class="govuk-heading-s">Preview</h2>
 
             <audio id="preview-player" controls>
                 <source src="/public/audio/preview_message.mp3" type="audio/mpeg">
@@ -194,25 +174,23 @@
 
 </div>
 
-</form>
-
 {% endblock %}
 
 {% block pageScripts %}
     
     <script>
 
-        var currentPreviewTextTrimmed = $('textarea#spoken-message').val().trim()
+        var currentPreviewTextTrimmed = $('textarea#urgent-spoken-message').val().trim()
         var previewText = currentPreviewTextTrimmed
         var activePronunciations = []
 
         function adaptRefreshButton() {
-            const newEntryTrimmed = $('textarea#spoken-message').val().trim()
+            const newEntryTrimmed = $('textarea#urgent-spoken-message').val().trim()
             if (newEntryTrimmed == currentPreviewTextTrimmed) {
                 // Preview is up-to-date
                 $('#refresh-preview-button').prop('disabled', true)
                 $('#refresh-preview-button').text('Preview is ready')
-                $('#preview-header').text('Preview spoken message content')
+                $('#preview-header').text('Preview')
                 $('#refresh-preview-button').hide()
                 $('.audio-container').show()
             } else {
@@ -226,7 +204,7 @@
         }
 
         function updatePronunciations() {
-            const newEntryTrimmed = $('textarea#spoken-message').val().trim()
+            const newEntryTrimmed = $('textarea#urgent-spoken-message').val().trim()
             $.post( '/text-to-speech/get-pronunciations', { text : newEntryTrimmed }, function( item ) {
                 previewText = item.text
                 activePronunciations = item.usedPronunciations
@@ -267,17 +245,57 @@
             $('#refresh-preview-button').show()
             $('#refresh-preview-button').prop('disabled', true)
             $('#refresh-preview-button').text('Loading...')
-            currentPreviewTextTrimmed = $('textarea#spoken-message').val().trim()
+            currentPreviewTextTrimmed = $('textarea#urgent-spoken-message').val().trim()
             $.post( '/text-to-speech/get-pronunciations', { text : currentPreviewTextTrimmed }, function( item ) {
                 previewText = item.text
                 activePronunciations = item.usedPronunciations
                 refreshPronunciationList()
-                $.post( '/text-to-speech/generate', { text : previewText, fileName: 'spoken_preview' }, function( url ) {
+                $.post( '/text-to-speech/generate', { text : previewText, fileName: 'urgent_preview' }, function( url ) {
                     $( "#preview-player" ).attr( 'src', url );
                     adaptRefreshButton()
                 })
             })
         }
+
+        function saveInput() {
+            $.post( '/text-to-speech/save-input', { 
+                text : $('textarea#urgent-spoken-message').val().trim(), 
+                name: 'urgent-spoken-message'
+            })
+        }
+
+        $('#pronunciation-list-container').on('click', 'a', function(e) {
+            e.preventDefault()
+            const phraseToRemove = $(this).attr('data-phrase').trim()
+            $.post( '/text-to-speech/remove-pronunciation', { text : phraseToRemove }, function( done ) {
+                setTimeout(updatePreview(), 500)
+            })
+        })
+
+        $('#add-pronunciation-button').on('click', function(e) {
+            e.preventDefault()
+            const inputPhrase = $('#adjustment-phrase').val().trim()
+            const inputPronunciation = $('#adjustment-pronunciation').val().trim()
+            if (inputPhrase.length > 1 && inputPronunciation.length > 1) {
+                $.post( '/text-to-speech/add-pronunciation', { phrase : inputPhrase, pronunciation: inputPronunciation }, function( done ) {
+                    setTimeout(updatePreview(), 500)
+                    $('#adjustment-phrase').val('')
+                    $('#adjustment-pronunciation').val('')
+                    $('input[name="adjustment-save"]').prop('checked', false)
+                }) 
+            }
+        })
+
+        $('textarea#urgent-spoken-message').on('input', function() {
+            updatePronunciations()
+            adaptRefreshButton()
+            saveInput()
+        })
+
+        $('#refresh-preview-button').on('click', function(e) {
+            e.preventDefault()
+            updatePreview()
+        })
 
         var typingTimer
         var doneTypingInterval = 200
@@ -305,39 +323,6 @@
                 name: 'spoken-message'
             })
         }
-
-        $('#pronunciation-list-container').on('click', 'a', function(e) {
-            e.preventDefault()
-            const phraseToRemove = $(this).attr('data-phrase').trim()
-            $.post( '/text-to-speech/remove-pronunciation', { text : phraseToRemove }, function( done ) {
-                setTimeout(updatePreview(), 500)
-            })
-        })
-
-        $('#add-pronunciation-button').on('click', function(e) {
-            e.preventDefault()
-            const inputPhrase = $('#adjustment-phrase').val().trim()
-            const inputPronunciation = $('#adjustment-pronunciation').val().trim()
-            if (inputPhrase.length > 1 && inputPronunciation.length > 1) {
-                $.post( '/text-to-speech/add-pronunciation', { phrase : inputPhrase, pronunciation: inputPronunciation }, function( done ) {
-                    setTimeout(updatePreview(), 500)
-                    $('#adjustment-phrase').val('')
-                    $('#adjustment-pronunciation').val('')
-                    $('input[name="adjustment-save"]').prop('checked', false)
-                }) 
-            }
-        })
-
-        $('textarea#spoken-message').on('input', function() {
-            updatePronunciations()
-            adaptRefreshButton()
-            saveInput()
-        })
-
-        $('#refresh-preview-button').on('click', function(e) {
-            e.preventDefault()
-            updatePreview()
-        })
 
         adaptRefreshButton()
         updatePronunciations()

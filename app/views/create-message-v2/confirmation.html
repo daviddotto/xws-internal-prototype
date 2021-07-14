@@ -9,8 +9,7 @@
 {% block contextBanner %}
 
     {{ targetAreaBanner({
-        area: area,
-        regionURL: 'region-overview'
+        area: area
     }) }}
 
 {% endblock %}
@@ -41,7 +40,7 @@
                     }) }}
 
                     <p>
-                        Subscribers in {{ area.label }} are receiving this {{ area.type }}.
+                        The {{ area.type }} is being sent to all subscribers in {{ area.label }}.
                     </p>
                 {% else %}
                     {{ govukPanel({
@@ -49,7 +48,7 @@
                     }) }}
 
                     <p>
-                        Subscribers in {{ area.label }} will receive this {{ area.type }} at XX:XX on XXX XXXXXX 2021.
+                        The {{ area.type }} has now been scheduled to be sent to all subscribers in {{ area.label }} at XX:XX on XXX XXXXXX 2021.
                     </p>
                 {% endif %}
                 
@@ -67,7 +66,7 @@
 
                 {{ govukButton ({
                     html: 'Return to home page',
-                    href: 'region-overview'
+                    href: '#'
                 }) }}
 
             </form>

@@ -9,8 +9,7 @@
 {% block contextBanner %}
 
     {{ targetAreaBanner({
-        area: area,
-        regionURL: 'region-overview'
+        area: area
     }) }}
 
 {% endblock %}
@@ -37,7 +36,7 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-                <h1 class="govuk-heading-xl">{{ area.label }} flood {{ area.type }} area</h1>
+                <h1 class="govuk-heading-xl">{{ area.label }} - {{ area.type }} area</h1>
 
         </div>
 
@@ -52,86 +51,49 @@
                     <figure>
                         <div id="map"></div>
                         <figcaption>
-                            {{ 'Map of the flood ' + area.type + ' area' }}
+                            {{ 'Map of ' + area.label + ' ' + area.type + ' area' }}
                         </figcaption>
                     </figure>
 
                 {% endset %}
                 
                 {{ govukDetails({
-                    summaryText: 'View a map of the flood ' + area.type + ' area',
+                    summaryText: 'View a map of ' + area.label + ' ' + area.type + ' area',
                     html: detailsContentHTML
                 }) }}
 
-                {% if area.issueDate %}
+                {% if area.type == 'warning' %}
 
                     <div class="app-notification-list">
 
-                        <h2 class="govuk-heading-l">
-                            {{ area.type | sentenceCase }} issued at {{ area.issueDate | getTime }} {{ area.issueDate | friendlyDate }}
-                        </h2>
+                        <p>No flood warnings in force or scheduled.</p>
 
-                        <p>
-                            {{ area.updateDate | dueLabelStandalone(data.currentDate) | safe }} <br>
-                            ({{ area.updateDate | getTime }} on {{ area.updateDate | friendlyDate }})
-                        </p>
-
-                        {% set insetContent %}
-                            
-                            <p>
-                                This message has been issued because there is a possibility of some flooding of homes and businesses between 18:32 and 19:47 today, {{ area.issueDate | friendlyDate }}. Water levels are expected to be higher than usual, due to the forecast weather conditions as a surge coincides with the high water. Areas most at risk are {{ area.description }}. For more info refer to local tide tables). Take care on coastal roads and footpaths, and don't put yourself in unnecessary danger. We are closely monitoring the situation and not expecting the situation to escalate, or to issue anything else for the following water level rises.
-                            </p>
-                            
-                        {% endset %}
-
-                        {{ govukInsetText ({
-                            html: insetContent
-                        }) }}
-
-                        <ul class="govuk-list govuk-!-margin-top-2">
-                            <li><a href="#">View this {{ area.type }} on GOV.UK (opens in a new tab)</a></li>
-                            <li><a href="#">View this {{ area.type }} on FWIS (opens in a new tab)</a></li>
-                        </ul>
-
-                        {{ govukButton ({
-                            text: 'Update ' + area.type,
-                            href: '#',
-                            classes: 'govuk-!-margin-bottom-2'
-                        }) }}
-                        <br>
-                        {{ govukButton ({
-                            text: 'Remove ' + area.type,
-                            href: '#',
-                            classes: 'govuk-button--warning govuk-!-margin-bottom-2'
-                        }) }}
-
-                        <ul class="govuk-list govuk-!-margin-top-2">
-                            <li><a href="#">View past flood warnings for this target area</a></li>
+                        <ul class="govuk-list">
+                            {{ govukButton ({
+                                text: 'Issue a new flood warning',
+                                href: 'severity'
+                            }) }}
+                            <li><a href="#">3 draft flood warnings saved to this target area</a></li>
+                            <li><a href="#">View past flood warnings</a></li>
                         </ul>
                     
                     </div>
 
-                {% else %}
+                {% endif %}
+
+                {% if area.type == 'alert' %}
 
                     <div class="app-notification-list">
 
-                        {{ govukInsetText ({
-                            text: 'No flood ' + area.type + ' in force'
-                        }) }}
+                        <p>No flood alerts in force or scheduled.</p>
 
-                        {{ govukButton ({
-                            text: 'Issue a new flood ' + area.type,
-                            href: 'severity' if area.type == 'warning' else 'spoken-message',
-                            classes: 'govuk-!-margin-bottom-2'
-                        }) }}
-
-                        <ul class="govuk-list govuk-!-margin-top-2">
-                            {% if data['send-option'] == 'Draft' %}
-                                <li>
-                                    <a href="#">1 draft warning saved</a>
-                                </li>
-                            {% endif %}
-                            <li><a href="#">View past flood alerts for this target area</a></li>
+                        <ul class="govuk-list">
+                            {{ govukButton ({
+                                text: 'Issue a new flood alert',
+                                href: 'spoken-message'
+                            }) }}
+                            <li><a href="#">3 draft flood alerts saved to this target area</a></li>
+                            <li><a href="#">View past flood alerts</a></li>
                         </ul>
                     
                     </div>

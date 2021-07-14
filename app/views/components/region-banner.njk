@@ -1,5 +1,5 @@
-{% macro targetAreaBanner(props) %}
-    {% set area = props.area %}
+{% macro regionBanner(props) %}
+    {% set region = props.region %}
 
     <div class="app-context-banner">
 
@@ -8,8 +8,14 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-full">
                     <p style="margin-bottom: 0;">
-                        <b><a href="{{ props.regionURL }}">{{ area.eaAreaName }}</a> ›</b>
-                        {{ area.label }} ({{ area.notation }})
+                        <b><a href="{{ props.nationalURL }}">England</a> ›</b>
+                        {% if props.regionUrl %}
+                            <a href="{{ props.regionUrl }}">
+                                {{ region.name }}
+                            </a>
+                        {% else %}
+                            {{ region.name }}
+                        {% endif %}
                         {% if props.prefix %}
                         › {{ props.prefix }}
                         {% endif %}

@@ -19,7 +19,7 @@ Example usage:
 
 module.exports = {
 	// Insert values here
-
+	regions: false,
 	pronunciations: [
 		{
 			phrase: 'A5087',

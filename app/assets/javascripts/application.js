@@ -7,6 +7,7 @@ if (window.console && window.console.info) {
 
 $(document).ready(function () {
 	window.GOVUKFrontend.initAll()
+	window.MOJFrontend.initAll()
 })
 
 $('a').addClass('govuk-link--no-visited-state')
@@ -22,7 +23,7 @@ const iterationRoute = (str, path) => {
 		path = path.slice(0, -pathParts[pathParts.length - 1].length)
 	}
 	console.log({ pathParts })
-	return str.replace('#root#', pathParts[pathParts.length - 1])
+	return str.replace(/#root#/g, pathParts[pathParts.length - 1])
 }
 
 const windowPath = window.location.pathname

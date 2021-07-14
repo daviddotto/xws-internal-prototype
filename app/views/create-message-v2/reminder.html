@@ -9,8 +9,7 @@
 {% block contextBanner %}
 
     {{ targetAreaBanner({
-        area: area,
-        regionURL: 'region-overview'
+        area: area
     }) }}
 
 {% endblock %}
@@ -124,22 +123,22 @@
                             value: recommendedHoursBeforeUpdate + ' hours after issue',
                             checked: true if (data['reminder-option'] == (recommendedHoursBeforeUpdate + ' hours after issue')),
                             hint: {
-                                text: '(Recommended)'
+                                text: '(Recommended for this type of ' + area.type + ')'
                             },
                             checked: true
                         },
                         {
-                            text: 'Choose number of hours after issue',
-                            value: 'Choose number of hours after issue',
-                            checked: true if data['reminder-option'] == 'Choose number of hours after issue',
+                            text: 'A chosen number of hours after issue',
+                            value: 'A chosen number of hours after issue',
+                            checked: true if data['reminder-option'] == 'A chosen number of hours after issue',
                             conditional: {
                                 html: numberOfHoursHTML
                             }
                         },
                         {
-                            text: 'Choose date and time',
-                            value: 'Choose date and time',
-                            checked: true if data['reminder-option'] == 'Choose date and time',
+                            text: 'A chosen date and time',
+                            value: 'A chosen date and time',
+                            checked: true if data['reminder-option'] == 'A chosen date and time',
                             conditional: {
                                 html: reminderHTML
                             }

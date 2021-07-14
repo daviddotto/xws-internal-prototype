@@ -1,22 +1,7 @@
 {% extends 'layout_unbranded.html' %}
 
-{% set region = data.regions[data['selected-region']] %}
-{% set taType = data['ta-type'] %}
-{% set counties = region.warningAreas | areasGroupedByCounty if taType == 'warning' else region.alertAreas | areasGroupedByCounty %}
-
 {% block pageTitle %}
-    Enter a flood target area code
-{% endblock %}
-
-{% block contextBanner %}
-
-    {{ regionBanner({
-        region: region,
-        nationalURL: 'national-overview',
-        prefix: 'Issue a new ' + taType,
-        regionUrl: 'region-overview'
-    }) }}
-
+    Enter an area code
 {% endblock %}
 
 {% block content %}
@@ -46,12 +31,6 @@
                 {{ govukButton ({
                     html: 'Continue'
                 }) }}
-
-                <p>
-                    <a href="target-area-list">
-                        Find a flood {{ taType }} target area
-                    </a>
-                </p>
 
             </form>
 

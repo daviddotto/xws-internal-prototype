@@ -92,3 +92,103 @@ a.app-link-destructive {
 	border-left: $govuk-brand-colour 4px solid;
 	margin-bottom: 40px;
 }
+
+.app-statistic-header-row {
+	display: flex;
+	align-items: center;
+	.app-statistic-header-icon {
+		padding-right: 1em;
+
+		img {
+			max-height: 4em;
+		}
+	}
+	.app-statistic-header-detail {
+	}
+}
+
+.app-danger-text {
+	color: govuk-colour('red');
+	font-weight: bold;
+}
+
+.app-no-wrap {
+	white-space: nowrap;
+}
+
+.app-target-area-summary {
+	padding: 1em;
+	background-color: govuk-colour('light-grey');
+	.app-target-area-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.app-target-area-in-force {
+	border-left: govuk-colour('red') 4px solid;
+}
+
+.app-in-force-label {
+	display: inline-block;
+	color: govuk-colour('red');
+	font-weight: bold;
+	&::before {
+		content: '';
+		display: inline-block;
+		vertical-align: bottom;
+		width: 14px;
+		height: 14px;
+		margin-bottom: 3px;
+		border-radius: 50%;
+		background-color: govuk-colour('red');
+		box-shadow: 0 0 0 2px white, 0 0 0 4px govuk-colour('red');
+		margin-right: 0.5em;
+		animation: alertPulse 1s alternate infinite linear;
+	}
+}
+
+@keyframes alertPulse {
+	0% {
+		background-color: white;
+	}
+	100% {
+		background-color: rgba($color: govuk-colour('red'), $alpha: 1);
+	}
+}
+
+.app-label-bold {
+	font-weight: bold;
+}
+
+.app-county-is-empty {
+	display: none;
+}
+
+.app-notification {
+	padding: 1em;
+	background-color: $govuk-brand-colour;
+	* {
+		color: white !important;
+	}
+}
+
+.govuk-button-blue {
+	background-color: $govuk-brand-colour;
+	border-color: $govuk-brand-colour;
+}
+
+.app-add-link-list {
+	a {
+		display: inline-block;
+		&::before {
+			content: '+';
+			transform: scale(1.75);
+			display: inline-block;
+			vertical-align: middle;
+			margin-right: 1em;
+			margin-bottom: 0.25em;
+		}
+	}
+}

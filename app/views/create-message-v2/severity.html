@@ -3,14 +3,13 @@
 {% set area = data.area %}
 
 {% block pageTitle %}
-    Add an urgent message to telephone call?
+    Warning severity
 {% endblock %}
 
 {% block contextBanner %}
 
     {{ targetAreaBanner({
-        area: area,
-        regionURL: 'region-overview'
+        area: area
     }) }}
 
 {% endblock %}
@@ -32,31 +31,34 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-            <form action="urgent-spoken-message">
+            {% if data.fromCheck %}
+            <form action="check">
+            {% else %}
+            <form action="spoken-message">
+            {% endif %}
 
                 {{ govukRadios ({
-                    idPrefix: 'add-urgent-message',
-                    name: 'add-urgent-message',
+                    idPrefix: 'severity',
+                    name: 'severity',
                     fieldset: {
                         legend: {
-                            text: 'Add an urgent message to telephone calls?',
+                            text: 'Warning severity',
                             isPageHeading: true,
                             classes: 'govuk-fieldset__legend--xl'
                         }
                     },
                     hint: {
-                        html: '<p>A short message can be added to the standard message played to users who have asked to get flood ' + area.type + 's by telephone.</p>'
+                            text: 'Only select ‘Severe warning’ if it has been requested by a Flood Warning Duty Officer (FWDO) otherwise, select ‘Warning’.'
                     },
                     items: [
                         {
-                            text: 'Yes',
-                            value: 'Yes',
-                            checked: true if data['add-urgent-message'] == 'Yes'
+                            text: 'Warning',
+                            value: 'Warning',
+                            checked: true if data['severity'] != 'Severe warning'
                         },
                         {
-                            text: 'No',
-                            value: 'No',
-                            checked: true if data['add-urgent-message'] == 'No'
+                            text: 'Severe warning',
+                            value: 'Severe warning'
                         }
                     ]
                 }) }}

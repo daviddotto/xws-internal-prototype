@@ -363,6 +363,225 @@ module.exports = function (env) {
 		return date
 	}
 
+	filters.regionsAsTableRows = (regions, href) => {
+		var outputArray = []
+
+		var regionArray = Object.values(regions)
+
+		regionArray.sort((regionA, regionB) => {
+			var nameA = regionA.name.toUpperCase() // ignore upper and lowercase
+			var nameB = regionB.name.toUpperCase() // ignore upper and lowercase
+			if (nameA < nameB) {
+				return -1
+			}
+			if (nameA > nameB) {
+				return 1
+			}
+
+			// names must be equal
+			return 0
+		})
+
+		for (region of regionArray) {
+			outputArray.push([
+				{
+					html:
+						'<a href="' +
+						href +
+						'?selected-region=' +
+						region.name +
+						'">' +
+						region.name +
+						'</a>',
+				},
+				{
+					text: region.alertsInForce,
+					format: 'numeric',
+					attributes: {
+						'data-sort-value': region.alertsInForce,
+					},
+				},
+				{
+					text: region.warningsInForce,
+					format: 'numeric',
+					attributes: {
+						'data-sort-value': region.warningsInForce,
+					},
+				},
+				{
+					text: region.severeWarningsInForce,
+					format: 'numeric',
+					attributes: {
+						'data-sort-value': region.severeWarningsInForce,
+					},
+				},
+			])
+		}
+		return outputArray
+	}
+
+	filters.regionSituationArray = (region) => {
+		var allAreas = region.warningAreas.concat(region.alertAreas)
+		allAreas = allAreas.filter((area) => area.issueDate)
+		allAreas.sort((areaA, areaB) => {
+			return new Date(areaA.updateDate) - new Date(areaB.updateDate)
+		})
+		return allAreas
+	}
+
+	filters.dueLabel = (actionDate, nowDate) => {
+		const timeInterval =
+			new Date(actionDate).getTime() - new Date(nowDate).getTime()
+		const isOverdue = timeInterval < 0
+		const hours = Math.abs(
+			Math.floor((timeInterval % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+		)
+		const minutes = Math.abs(
+			Math.floor((timeInterval % (1000 * 60 * 60)) / (1000 * 60))
+		)
+		return `${
+			isOverdue ? '<span class="app-danger-text">Overdue by' : '<span>In'
+		} ${hours} ${hours == 1 ? 'hr' : 'hrs'} ${minutes} ${
+			minutes == 1 ? 'min' : 'mins'
+		}</span>`
+	}
+
+	filters.dueLabelStandalone = (actionDate, nowDate) => {
+		const timeInterval =
+			new Date(actionDate).getTime() - new Date(nowDate).getTime()
+		const isOverdue = timeInterval < 0
+		const hours = Math.abs(
+			Math.floor((timeInterval % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+		)
+		const minutes = Math.abs(
+			Math.floor((timeInterval % (1000 * 60 * 60)) / (1000 * 60))
+		)
+		return `${
+			isOverdue
+				? '<span class="app-danger-text">Update or removal overdue by'
+				: '<span>Update or removal due in'
+		} ${hours} ${hours == 1 ? 'hr' : 'hrs'} ${minutes} ${
+			minutes == 1 ? 'min' : 'mins'
+		}</span>`
+	}
+
+	filters.situationTableRows = (situationArray, href, nowDate) => {
+		var rows = []
+
+		for (area of situationArray) {
+			const maxAreaNameCharacters = 45
+			var shortenedAreaName = ''
+
+			if (area.label.length <= maxAreaNameCharacters) {
+				shortenedAreaName = area.label
+			} else {
+				shortenedAreaName =
+					area.label.slice(0, maxAreaNameCharacters) + '&hellip;'
+			}
+
+			rows.push([
+				{
+					html:
+						'<a class="govuk-!-margin-right-2" href="' +
+						href +
+						'&area-code=' +
+						area.notation +
+						'&ta-type=' +
+						area.type +
+						'">' +
+						area.notation +
+						'</a>' +
+						(area.isSevere
+							? `<strong class="govuk-tag govuk-tag--red">severe</strong>`
+							: area.type == 'warning'
+							? `<strong class="govuk-tag govuk-tag--yellow">${area.type}</strong>`
+							: `<strong class="govuk-tag govuk-tag--blue">${area.type}</strong>`) +
+						'<br>' +
+						shortenedAreaName,
+					attributes: {
+						'data-sort-value': area.label,
+					},
+				},
+				// {
+				// 	text: `${filters.getTime(area.issueDate)} ${filters.friendlyDate(
+				// 		area.issueDate
+				// 	)}`,
+				// 	attributes: {
+				// 		'data-sort-value': new Date(area.issueDate).getTime(),
+				// 	},
+				// },
+				{
+					html: `${filters.dueLabel(
+						area.updateDate,
+						nowDate
+					)}<br>(${filters.getTime(area.updateDate)} ${filters.friendlyDate(
+						area.updateDate
+					)})`,
+					attributes: {
+						'data-sort-value': new Date(area.updateDate).getTime(),
+					},
+				},
+			])
+		}
+
+		return rows
+	}
+
+	filters.areasGroupedByCounty = (areasArray) => {
+		var counties = {}
+
+		for (area of areasArray) {
+			var county = area.county
+			var existsInObject = counties[county]
+
+			if (!existsInObject) {
+				counties[county] = [area]
+			} else {
+				counties[county].push(area)
+			}
+		}
+
+		return counties
+	}
+
+	filters.colorForTag = (tag) => {
+		switch (tag) {
+			case 'tidal':
+				return 'purple'
+			case 'fluvial':
+				return 'turquoise'
+			case 'coastal':
+				return 'pink'
+			case 'groundwater':
+				return 'yellow'
+			default:
+				return 'blue'
+		}
+	}
+
+	function string_to_slug(str) {
+		str = str.replace(/^\s+|\s+$/g, '') // trim
+		str = str.toLowerCase()
+
+		// remove accents, swap ñ for n, etc
+		var from = 'àáäâèéëêìíïîòóöôùúüûñç·/_,:;'
+		var to = 'aaaaeeeeiiiioooouuuunc------'
+		for (var i = 0, l = from.length; i < l; i++) {
+			str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i))
+		}
+
+		str = str
+			.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+			.replace(/\s+/g, '-') // collapse whitespace and replace by -
+			.replace(/-+/g, '-') // collapse dashes
+
+		return str
+	}
+
+	filters.nameAsSlug = (name) => {
+		return string_to_slug(name)
+	}
+
 	/* ------------------------------------------------------------------
     add your methods to the filters obj below this comment block:
     @example:
