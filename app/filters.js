@@ -64,8 +64,8 @@ module.exports = function (env) {
 		const qbDate = decisionIsWithin3Months
 			? new Date(awardDate)
 			: new Date(awardDate) > threeMonthsBeforeToday
-			? new Date(awardDate)
-			: threeMonthsBeforeToday
+				? new Date(awardDate)
+				: threeMonthsBeforeToday
 		const dates = [new Date(caringDate), new Date(qbDate)]
 		let hasInvalidDate = false
 		let latestDate = new Date()
@@ -268,9 +268,8 @@ module.exports = function (env) {
 				} else {
 					if (area.hasDistance) {
 						let distanceInMiles = filters.oneDecimalPlace(area.distance)
-						labelText += ` - ${
-							distanceInMiles == '1.0' ? '1 mile' : `${distanceInMiles} miles`
-						} away`
+						labelText += ` - ${distanceInMiles == '1.0' ? '1 mile' : `${distanceInMiles} miles`
+							} away`
 					} else {
 						labelText += ` - less than 2.0 miles away`
 					}
@@ -439,11 +438,9 @@ module.exports = function (env) {
 		const minutes = Math.abs(
 			Math.floor((timeInterval % (1000 * 60 * 60)) / (1000 * 60))
 		)
-		return `${
-			isOverdue ? '<span class="app-danger-text">Overdue by' : '<span>In'
-		} ${hours} ${hours == 1 ? 'hr' : 'hrs'} ${minutes} ${
-			minutes == 1 ? 'min' : 'mins'
-		}</span>`
+		return `${isOverdue ? '<span class="app-danger-text">Overdue by' : '<span>In'
+			} ${hours} ${hours == 1 ? 'hr' : 'hrs'} ${minutes} ${minutes == 1 ? 'min' : 'mins'
+			}</span>`
 	}
 
 	filters.dueLabelStandalone = (actionDate, nowDate) => {
@@ -456,20 +453,18 @@ module.exports = function (env) {
 		const minutes = Math.abs(
 			Math.floor((timeInterval % (1000 * 60 * 60)) / (1000 * 60))
 		)
-		return `${
-			isOverdue
-				? '<span class="app-danger-text">Update or removal overdue by'
-				: '<span>Update or removal due in'
-		} ${hours} ${hours == 1 ? 'hr' : 'hrs'} ${minutes} ${
-			minutes == 1 ? 'min' : 'mins'
-		}</span>`
+		return `${isOverdue
+			? '<span class="app-danger-text">Update or removal overdue by'
+			: '<span>Update or removal due in'
+			} ${hours} ${hours == 1 ? 'hr' : 'hrs'} ${minutes} ${minutes == 1 ? 'min' : 'mins'
+			}</span>`
 	}
 
 	filters.situationTableRows = (situationArray, href, nowDate) => {
 		var rows = []
 
 		for (area of situationArray) {
-			const maxAreaNameCharacters = 45
+			const maxAreaNameCharacters = 65
 			var shortenedAreaName = ''
 
 			if (area.label.length <= maxAreaNameCharacters) {
@@ -500,8 +495,8 @@ module.exports = function (env) {
 					html: area.isSevere
 						? `<strong class="govuk-tag govuk-tag--red">severe</strong>`
 						: area.type == 'warning'
-						? `<strong class="govuk-tag govuk-tag--yellow">${area.type}</strong>`
-						: `<strong class="govuk-tag govuk-tag--blue">${area.type}</strong>`,
+							? `<strong class="govuk-tag govuk-tag--yellow">${area.type}</strong>`
+							: `<strong class="govuk-tag govuk-tag--blue">${area.type}</strong>`,
 					attributes: {
 						'data-sort-value': area.isSevere ? `severe` : area.type,
 					},
@@ -518,9 +513,9 @@ module.exports = function (env) {
 					html: `${filters.dueLabel(
 						area.updateDate,
 						nowDate
-					)}<br>(${filters.getTime(area.updateDate)} ${filters.friendlyDate(
+					)}<br><span class="govuk-hint">(${filters.getTime(area.updateDate)} ${filters.friendlyDate(
 						area.updateDate
-					)})`,
+					)})</span>`,
 					attributes: {
 						'data-sort-value': new Date(area.updateDate).getTime(),
 					},
@@ -587,38 +582,38 @@ module.exports = function (env) {
 	}
 
 	/* ------------------------------------------------------------------
-    add your methods to the filters obj below this comment block:
-    @example:
+	add your methods to the filters obj below this comment block:
+	@example:
 
-    filters.sayHi = function(name) {
-        return 'Hi ' + name + '!'
-    }
+	filters.sayHi = function(name) {
+		return 'Hi ' + name + '!'
+	}
 
-    Which in your templates would be used as:
+	Which in your templates would be used as:
 
-    {{ 'Paul' | sayHi }} => 'Hi Paul'
+	{{ 'Paul' | sayHi }} => 'Hi Paul'
 
-    Notice the first argument of your filters method is whatever
-    gets 'piped' via '|' to the filter.
+	Notice the first argument of your filters method is whatever
+	gets 'piped' via '|' to the filter.
 
-    Filters can take additional arguments, for example:
+	Filters can take additional arguments, for example:
 
-    filters.sayHi = function(name,tone) {
-      return (tone == 'formal' ? 'Greetings' : 'Hi') + ' ' + name + '!'
-    }
+	filters.sayHi = function(name,tone) {
+	  return (tone == 'formal' ? 'Greetings' : 'Hi') + ' ' + name + '!'
+	}
 
-    Which would be used like this:
+	Which would be used like this:
 
-    {{ 'Joel' | sayHi('formal') }} => 'Greetings Joel!'
-    {{ 'Gemma' | sayHi }} => 'Hi Gemma!'
+	{{ 'Joel' | sayHi('formal') }} => 'Greetings Joel!'
+	{{ 'Gemma' | sayHi }} => 'Hi Gemma!'
 
-    For more on filters and how to write them see the Nunjucks
-    documentation.
+	For more on filters and how to write them see the Nunjucks
+	documentation.
 
   ------------------------------------------------------------------ */
 
 	/* ------------------------------------------------------------------
-    keep the following line to return your filters to the app
+	keep the following line to return your filters to the app
   ------------------------------------------------------------------ */
 	return filters
 }
