@@ -37,7 +37,14 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-                <h1 class="govuk-heading-xl">{{ area.label }} flood {{ area.type }} area</h1>
+            {% if area.issueDate %}
+                <p>
+                    {% set inForceType = 'Severe warning' if area.isSevere else area.type %}
+                    <span class="app-in-force-label">{{ inForceType | sentenceCase }} in force</span>
+                </p>
+            {% endif %}
+
+            <h1 class="govuk-heading-xl">{{ area.label }} flood {{ area.type }} area</h1>
 
         </div>
 
@@ -68,7 +75,7 @@
                     <div class="app-notification-list">
 
                         <h2 class="govuk-heading-l">
-                            {{ area.type | sentenceCase }} issued at {{ area.issueDate | getTime }} {{ area.issueDate | friendlyDate }}
+                            {{ area.type | sentenceCase }} issued at {{ area.issueDate | getTime }} on {{ area.issueDate | friendlyDate }}
                         </h2>
 
                         <p>
@@ -120,7 +127,7 @@
                         }) }}
 
                         {{ govukButton ({
-                            text: 'Issue a new flood ' + area.type,
+                            text: 'Issue a flood ' + area.type,
                             href: 'severity' if area.type == 'warning' else 'spoken-message',
                             classes: 'govuk-!-margin-bottom-2'
                         }) }}
@@ -143,13 +150,6 @@
         <div class="govuk-grid-column-one-third">
 
                 <h2 class="govuk-heading-m">Target area information</h2>
-
-                <p>
-                    {% set inForceType = 'Severe warning' if area.isSevere else area.type %}
-                    {% if area.issueDate %}
-                        <span class="app-in-force-label">{{ inForceType | sentenceCase }} in force</span>
-                    {% endif %}
-                </p>
 
                 {% set tagsHTML %}
 

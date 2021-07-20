@@ -193,11 +193,9 @@ a.app-link-destructive {
 }
 
 .app-notification {
-	padding: 1em;
-	background-color: $govuk-brand-colour;
-	* {
-		color: white !important;
-	}
+	padding: 1em 1em 1em 1.5em;
+	background-color: rgba($govuk-brand-colour, 0.1);
+	border-left: $govuk-brand-colour 4px solid;
 }
 
 .govuk-button-blue {
@@ -229,4 +227,9 @@ a.app-link-destructive {
 
 .govuk-header {
 	padding-top: 8px;
+}
+
+.app-table-area-name {
+	display: inline-block;
+	max-width: 25em;
 }

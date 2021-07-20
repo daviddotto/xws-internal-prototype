@@ -464,7 +464,7 @@ module.exports = function (env) {
 		var rows = []
 
 		for (area of situationArray) {
-			const maxAreaNameCharacters = 65
+			const maxAreaNameCharacters = 999
 			var shortenedAreaName = ''
 
 			if (area.label.length <= maxAreaNameCharacters) {
@@ -485,8 +485,8 @@ module.exports = function (env) {
 						area.type +
 						'">' +
 						area.notation +
-						'</a> <br>' +
-						shortenedAreaName,
+						'</a> <br> <span class="app-table-area-name">' +
+						shortenedAreaName + '</span>',
 					attributes: {
 						'data-sort-value': area.notation,
 					},
@@ -552,7 +552,7 @@ module.exports = function (env) {
 			case 'coastal':
 				return 'pink'
 			case 'groundwater':
-				return 'yellow'
+				return 'grey'
 			default:
 				return 'blue'
 		}
