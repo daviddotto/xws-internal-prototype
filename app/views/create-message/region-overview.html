@@ -104,13 +104,19 @@
             {{ govukTable({
                 caption: 'Area situation',
                 captionClasses: 'govuk-visually-hidden',
-                firstCellIsHeader: true,
+                firstCellIsHeader: false,
                 attributes: {
                     'data-module': 'moj-sortable-table'
                 },
                 head: [
                     {
                         text: 'Target Area',
+                        attributes: {
+                            'aria-sort': 'none'
+                        }
+                    },
+                    {
+                        text: 'Type',
                         attributes: {
                             'aria-sort': 'none'
                         }

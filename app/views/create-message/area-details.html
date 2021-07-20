@@ -144,6 +144,26 @@
 
                 <h2 class="govuk-heading-m">Target area information</h2>
 
+                <p>
+                    {% set inForceType = 'Severe warning' if area.isSevere else area.type %}
+                    {% if area.issueDate %}
+                        <span class="app-in-force-label">{{ inForceType | sentenceCase }} in force</span>
+                    {% endif %}
+                </p>
+
+                {% set tagsHTML %}
+
+                    {% for tag in area.tags %}
+
+                        {{ govukTag({
+                            text: tag,
+                            classes: 'govuk-tag--' + tag | colorForTag
+                        }) }}
+
+                    {% endfor %}
+
+                {% endset %}
+
                 {{ govukSummaryList ({
                     classes: 'app-summary-list-vertical',
                     rows: [
@@ -165,10 +185,18 @@
                         },
                         {
                             key: {
-                                text: 'Type'
+                                text: 'Target area type'
                             },
                             value: {
-                                text: 'Flood ' + area.type + ' area'
+                                html: '<strong class="govuk-tag govuk-tag--red">severe</strong>' if area.isSevere else ('<strong class="govuk-tag govuk-tag--yellow">' + area.type + '</strong>' if area.type == 'warning' else '<strong class="govuk-tag govuk-tag--blue">' + area.type + '</strong>') | safe
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Flooding type' if area.tags.length == 1 else 'Flooding types'
+                            },
+                            value: {
+                                text: tagsHTML | safe
                             }
                         },
                         {

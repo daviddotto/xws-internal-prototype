@@ -490,16 +490,20 @@ module.exports = function (env) {
 						area.type +
 						'">' +
 						area.notation +
-						'</a>' +
-						(area.isSevere
-							? `<strong class="govuk-tag govuk-tag--red">severe</strong>`
-							: area.type == 'warning'
-							? `<strong class="govuk-tag govuk-tag--yellow">${area.type}</strong>`
-							: `<strong class="govuk-tag govuk-tag--blue">${area.type}</strong>`) +
-						'<br>' +
+						'</a> <br>' +
 						shortenedAreaName,
 					attributes: {
-						'data-sort-value': area.label,
+						'data-sort-value': area.notation,
+					},
+				},
+				{
+					html: area.isSevere
+						? `<strong class="govuk-tag govuk-tag--red">severe</strong>`
+						: area.type == 'warning'
+						? `<strong class="govuk-tag govuk-tag--yellow">${area.type}</strong>`
+						: `<strong class="govuk-tag govuk-tag--blue">${area.type}</strong>`,
+					attributes: {
+						'data-sort-value': area.isSevere ? `severe` : area.type,
 					},
 				},
 				// {
