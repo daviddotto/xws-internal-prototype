@@ -1,0 +1,129 @@
+{% extends 'layout_unbranded.html' %}
+
+{% block pageTitle %}
+    National flooding overview
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <h1 class="govuk-heading-xl">National flooding overview</h1>
+
+        </div>
+
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+
+        <div class="govuk-grid-column-one-third">
+
+            <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                <div class="app-statistic-header-icon">
+                    <img src="/public/images/flood-warning-icons/alert.gif" alt="Flood alert icon">
+                </div>
+                
+                <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                    {{ data.totalAlerts }}
+                </span>
+
+            </div>
+
+            <span class="app-statistic-content govuk-heading-m">
+                Flood alerts in-force
+            </span>
+
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+            <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                <div class="app-statistic-header-icon">
+                    <img src="/public/images/flood-warning-icons/warning.gif" alt="Flood warning icon">
+                </div>
+                
+                <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                    {{ data.totalWarnings }}
+                </span>
+
+            </div>
+
+            <span class="app-statistic-content govuk-heading-m">
+                Flood warnings in-force
+            </span>
+
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+            <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                <div class="app-statistic-header-icon">
+                    <img src="/public/images/flood-warning-icons/severe-warning.gif" alt="Severe flood warning icon">
+                </div>
+                
+                <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                    {{ data.totalSevereWarnings}}
+                </span>
+
+            </div>
+
+            <span class="app-statistic-content govuk-heading-m">
+                Severe flood warnings in-force
+            </span>
+
+        </div>
+
+</div>
+
+<div class='govuk-grid-row'>
+    <div class="govuk-grid-column-full">
+        
+        {{ govukTable({
+            caption: 'Areas',
+            captionClasses: 'govuk-visually-hidden',
+            firstCellIsHeader: false,
+            attributes: {
+                'data-module': 'moj-sortable-table'
+            },
+            head: [
+                {
+                    text: 'Area',
+                    attributes: {
+                        'aria-sort': 'ascending'
+                    }
+                },
+                {
+                    text: 'Alerts in force',
+                    attributes: {
+                        'aria-sort': 'none'
+                    },
+                    format: 'numeric' 
+                },
+                {
+                    text: 'Warnings in force',
+                    attributes: {
+                        'aria-sort': 'none'
+                    },
+                    format: 'numeric' 
+                },
+                {
+                    text: 'Severe warnings in force',
+                    attributes: {
+                        'aria-sort': 'none'
+                    },
+                    format: 'numeric' 
+                }
+            ],
+            rows: data.regions | regionsAsTableRows('region-overview')
+        }) }}
+
+    </div>
+</div>
+
+
+{% endblock %}

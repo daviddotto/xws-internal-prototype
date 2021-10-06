@@ -1,0 +1,160 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Set a reminder to update this {{ area.type }}?
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+{{ 'area-details' | redirect | safe if data['send-option'] == 'Draft' }}
+
+{% set recommendedHoursBeforeUpdate = (8 if data['severity'] != 'Severe warning' else 6) if area.type == 'warning' else 12 %}
+
+{% set recommendedDate = data.currentDate | dateAddingHours(recommendedHoursBeforeUpdate) %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form action="confirmation">
+
+                {% set reminderHTML %}
+                    
+                    {{ govukDateInput ({
+                        id: 'reminder-date',
+                        namePrefix: 'reminder-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Update or removal date',
+                                isPageHeading: false
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 14 8 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: recommendedDate | getDay
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: recommendedDate | getMonth
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value:  recommendedDate | getYear
+                            }
+                        ]
+                    }) }}
+                    
+
+                    {{ govukInput ({
+                        id: 'reminder-time',
+                        name: 'reminder-time',
+                        value: data['reminder-time'] if data['reminder-time'] else '',
+                        classes: 'govuk-input--width-5',
+                        hint: {
+                            text: 'Use a 24-hour format. For example, 15:00.'
+                        },
+                        label: {
+                            text: 'Update or removal time'
+                        },
+                        value: recommendedDate | getTime
+                    }) }}
+                    
+                {% endset %}
+
+                {% set numberOfHoursHTML %}
+
+                    {{ govukInput ({
+                        id: 'reminder-hours',
+                        name: 'reminder-hours',
+                        value: data['reminder-hours'] if data['reminder-hours'] else '',
+                        classes: 'govuk-input--width-2',
+                        label: {
+                            text: 'Number of hours after issue'
+                        },
+                        value: recommendedHoursBeforeUpdate
+                    }) }}
+
+                {% endset %}
+
+                {{ govukRadios ({
+                    idPrefix: 'reminder-option',
+                    name: 'reminder-option',
+                    fieldset: {
+                        legend: {
+                            text: 'When should this ' + area.type  + ' be updated or removed?',
+                            isPageHeading: false,
+                            classes: 'govuk-fieldset__legend--xl'
+                        }
+                    },
+                    hint: {
+                        text: ''
+                    },
+                    items: [
+                        {
+                            text: recommendedHoursBeforeUpdate + ' hours after issue',
+                            value: recommendedHoursBeforeUpdate + ' hours after issue',
+                            checked: true if (data['reminder-option'] == (recommendedHoursBeforeUpdate + ' hours after issue')),
+                            hint: {
+                                text: '(Recommended)'
+                            },
+                            checked: true
+                        },
+                        {
+                            text: 'Choose number of hours after issue',
+                            value: 'Choose number of hours after issue',
+                            checked: true if data['reminder-option'] == 'Choose number of hours after issue',
+                            conditional: {
+                                html: numberOfHoursHTML
+                            }
+                        },
+                        {
+                            text: 'Choose date and time',
+                            value: 'Choose date and time',
+                            checked: true if data['reminder-option'] == 'Choose date and time',
+                            conditional: {
+                                html: reminderHTML
+                            }
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: data['send-option'] + ' ' + area.type
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

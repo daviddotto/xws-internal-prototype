@@ -1,0 +1,131 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% set pageTitle = 'Issue a new ' + area.type %}
+
+{% block pageTitle %}
+    {{ pageTitle }}
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+        
+        </div>
+</div>
+            
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form method="post">
+
+                <h2 class="govuk-heading-m">
+                    Start with a blank message
+                </h2>
+
+                {{ govukButton ({
+                    text: 'Issue ' + area.type,
+                    href: '../severity' if area.type == 'warning' else '../spoken-message'
+                }) }}
+
+                <h2 class="govuk-heading-m govuk-!-margin-top-4">
+                    Start with a saved message for this target area
+                </h2>
+
+                {% for id, template in data['example-templates'] %}
+                    <div class="app-template-card">
+                        <h3 class="govuk-heading-s govuk-!-margin-top-3">
+                            {{ template.title }}
+                        </h3>
+                        <p class="govuk-hint">
+                            Added by {{ template.author }} on 23 July 2021
+                        </p>
+                        <p>
+                            {{ template.message | templateToContent(area) }}
+                        </p>
+                        <ul class="govuk-list app-template-option-list">
+                            <li>
+                                <a href="#">
+                                    Change
+                                    <span class="govuk-visually-hidden">
+                                        saved message
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="app-link-destructive" href="#">
+                                    Remove
+                                    <span class="govuk-visually-hidden">
+                                        saved message
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        {{ govukButton ({
+                            text: 'Start with this message',
+                            href: '#'
+                        }) }}
+                    </div>
+                {% endfor %}
+
+                {{ govukButton ({
+                    text: 'Add a new saved message',
+                    href: 'create-template',
+                    classes: 'govuk-!-margin-top-4'
+                }) }}
+
+            </form>
+
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+            
+            <h2 class="govuk-heading-m">
+                Saved messages options
+            </h2>
+
+            <ul class="govuk-list">
+                <li>
+                    <a href="#">
+                        Change the order of saved messages
+                    </a>
+                </li>
+                <li>
+                    <a class="app-link-destructive" href="#">
+                        Remove all saved messages from this target area
+                    </a>
+                </li>
+            
+        </div>
+
+</div>
+
+{% endblock %}

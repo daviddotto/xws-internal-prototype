@@ -1,0 +1,326 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set region = data.regions[data['selected-region']] %}
+{% set taType = data['ta-type'] %}
+{% set counties = region.warningAreas | areasGroupedByCounty if taType == 'warning' else region.alertAreas | areasGroupedByCounty %}
+
+{% block pageTitle %}
+    Flood {{ taType }} target areas in {{ region.name }}
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ regionBanner({
+        region: region,
+        nationalURL: 'national-overview',
+        prefix: 'Flood ' + taType + ' target areas',
+        regionUrl: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+{% endblock %}
+
+{% block content %}
+
+{% if not region %}
+    
+    {{ 'national-overview' | redirect | safe }}
+    
+{% endif %}
+
+<div class='govuk-grid-row'>
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Flood {{ taType }} target areas in {{ region.name }}</h1>
+        {% set detailsContentHTML %}
+            <ul class="govuk-list">
+                <li>
+                    <a href="#">Manage flood {{ taType }} target area groups</a>
+                </li>
+                <li>
+                    <a href="#">Add a new flood {{ taType }} target area</a>
+                </li>
+            </ul>
+        {% endset %}
+        
+        {{ govukDetails({
+            summaryText: 'Manage flood ' + taType + ' target areas',
+            html: detailsContentHTML
+        }) }}
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <h2 class="govuk-heading-m">Flood {{ taType }} target area by county</h2>
+
+            <div class="app-target-area-list">
+
+                {% for countyName, county in counties | dictsort %}
+
+                    <div class="app-county-group">
+
+                        <h3 id="{{ countyName | nameAsSlug }}" class="govuk-heading-s">{{ countyName }}</h2>
+
+                        <ul class="govuk-list">
+
+                            {% for area in county %}
+
+                                <li class="app-target-area-summary {{ 'app-target-area-in-force' if area.issueDate }} govuk-!-margin-bottom-4">
+                                    
+                                    <div class="app-target-area-header govuk-!-margin-bottom-2">
+                                        <span><a href="/area/search?area-code={{ area.notation }}&next-page=/create-message/area-details&error-page=/">{{ area.notation }}</a></span>
+                                        <span>
+                                            {% for tag in area.tags %}
+                                                {{ govukTag({
+                                                    text: tag,
+                                                    classes: 'govuk-tag--' + tag | colorForTag
+                                                }) }}
+                                            {% endfor %}
+                                        </span>
+                                    </div>
+                                    <h3 class="govuk-heading-s govuk-!-margin-bottom-0">{{ area.label }}</h3>
+                                    <p>
+                                        {{ area.description }}
+                                    </p>
+                                    {% if area.issueDate %}
+                                        <span class="app-in-force-label">{{ taType | sentenceCase }} in force</span>
+                                    {% endif %}
+                                </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="govuk-grid-column-one-third govuk-!-padding-bottom-4">
+            <h2 class="govuk-heading-m">Filter target areas</h2>
+
+            {{ govukInput ({
+                id: 'filter-text',
+                name: 'filter-text',
+                value: '',
+                classes: 'govuk-input--width-20',
+                label: {
+                    text: 'By keyword or code',
+                    classes: 'govuk-input--width-20 app-label-bold'
+                }
+            }) }}
+
+            {{ govukCheckboxes ({
+                idPrefix: 'filter-in-force',
+                name: 'filter-in-force',
+                classes: 'govuk-checkboxes--small',
+                fieldset: {
+                    legend: {
+                        text: 'By current situation',
+                        isPageHeading: false,
+                        classes: 'govuk-fieldset__legend--s'
+                    }
+                },
+                items: [
+                    {
+                        text: taType | sentenceCase + ' in force',
+                        value: 'true',
+                        checked: true
+                    },
+                    {
+                        text: 'Nothing in force',
+                        value: 'false',
+                        checked: true
+                    }
+                ]
+            }) }}
+
+            {{ govukCheckboxes ({
+                idPrefix: 'filter-tag',
+                name: 'filter-tag',
+                classes: 'govuk-checkboxes--small',
+                fieldset: {
+                    legend: {
+                        text: 'By flooding type',
+                        isPageHeading: false,
+                        classes: 'govuk-fieldset__legend--s'
+                    }
+                },
+                items: [
+                    {
+                        text: 'Fluvial',
+                        value: 'fluvial',
+                        checked: true
+                    },
+                    {
+                        text: 'Coastal',
+                        value: 'coastal',
+                        checked: true
+                    },
+                    {
+                        text: 'Tidal',
+                        value: 'tidal',
+                        checked: true
+                    },
+                    {
+                        text: 'Groundwater',
+                        value: 'groundwater',
+                        checked: true
+                    }
+                ]
+            }) }}
+
+            {{ govukButton ({
+                html: 'Reset filters',
+                type: 'button',
+                classes: 'govuk-button--secondary reset-filters'
+            }) }}
+
+            <h2 class="govuk-heading-m">Select a county to find in list</h2>
+            <ul class="govuk-list">
+                {% for countyName, county in counties | dictsort %}
+                <li>
+                    <a href="#{{ countyName | nameAsSlug }}">
+                        {{ countyName }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="govuk-grid-column-one-third sticky-column govuk-!-padding-bottom-4">
+            <p>
+                <a href="javascript:document.body.scrollTop = 0; document.documentElement.scrollTop = 0;">
+                    Return to top
+                </a>
+            </p>
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+    
+        function resetView() {
+            $('.app-county-group').removeClass('app-county-is-empty')
+            $('.app-target-area-summary').show()
+        }
+
+        function configureCountyGroups() {
+            $('.app-county-group').each(function() {
+                var $this = $(this)
+                var visableTargetAreas = $this.find('.app-target-area-summary:visible')
+                var visableCount = visableTargetAreas.length
+                if (visableCount == 0) {
+                    $this.addClass('app-county-is-empty')
+                }
+            })
+        }
+
+        function typeFilterChangeHandler() {
+            var visableTargetAreas = $('.app-target-area-summary:visible')
+            var activeTypes = []
+            $('input[name=filter-tag]:checked').each(function() {
+                activeTypes.push($(this).val().trim())
+            })
+            visableTargetAreas.each(function() {
+                var shouldBeVisible = false
+                var tags = $(this).find('.govuk-tag')
+                tags.each(function() {
+                    var tag = $(this).text().trim()
+                    shouldBeVisible = shouldBeVisible || (activeTypes.indexOf(tag) > -1)
+                })
+                $(this).toggle(shouldBeVisible)
+            })
+        }
+
+        function inForceFilterChangeHandler() {
+            var visableTargetAreas = $('.app-target-area-summary:visible')
+            var activeTypes = []
+            $('input[name=filter-in-force]:checked').each(function() {
+                activeTypes.push($(this).val().trim())
+            })
+            visableTargetAreas.each(function() {
+                var shouldBeVisible = false
+                var tags = $(this).find('.govuk-tag')
+                if (activeTypes.indexOf('true') > -1) {
+                    shouldBeVisible = $(this).is('.app-target-area-in-force')
+                }
+                if (activeTypes.indexOf('false') > -1) {
+                    shouldBeVisible = !$(this).is('.app-target-area-in-force')
+                }
+                $(this).toggle(shouldBeVisible)
+            })
+        }
+
+        function textFilterChangeHandler(query) {
+
+            var query = query || ''
+
+                if (query.length > 0) {
+
+                var normalisedQuery = query.toLowerCase().trim()
+
+                var visableTargetAreas = $('.app-target-area-summary:visible')
+
+                visableTargetAreas.each(function() {
+                    
+                    var normalisedContent = $(this).text().toLowerCase().trim()
+                    var hasMatches = normalisedContent.indexOf(normalisedQuery) > -1
+
+                    $(this).toggle(hasMatches)
+                
+                })
+
+            } 
+
+        }
+
+        function performFilters(query) {
+            resetView()
+            textFilterChangeHandler(query)
+            typeFilterChangeHandler()
+            inForceFilterChangeHandler()
+            configureCountyGroups()
+        }
+
+        function resetFilters() {
+            $('input[name=filter-tag]').prop('checked', true )
+            $('input[name=filter-in-force]').prop('checked', true )
+            $('input[name=filter-text]').val('')
+            resetView()
+        }
+
+        $('input[name=filter-in-force').on( 'change', function() {
+            performFilters($('input[name=filter-text]').val())
+        } )
+
+        $('input[name=filter-tag]').on( 'change', function() {
+            performFilters($('input[name=filter-text]').val())
+        } )
+
+        $('input[name=filter-text]').on( 'input', function() {
+            performFilters($(this).val())
+        } )
+
+        $('.reset-filters').on( 'click', function() {
+            resetFilters()
+        })
+
+        performFilters($('input[name=filter-text]').val())
+
+    </script>
+
+{% endblock %}

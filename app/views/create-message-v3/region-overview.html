@@ -1,0 +1,188 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set region = data.regions[data['selected-region']] %}
+
+{% block pageTitle %}
+    {{ region.name }} area overview
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ regionBanner({
+        region: region,
+        nationalURL: 'national-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+{% endblock %}
+
+{% block content %}
+
+{% if not region %}
+    
+    {{ 'national-overview' | redirect | safe }}
+    
+{% endif %}
+
+<div class='govuk-grid-row'>
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">{{ region.name }} area overview</h1>
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <div class="govuk-grid-column-one-third">
+
+                <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                    <div class="app-statistic-header-icon">
+                        <img src="/public/images/flood-warning-icons/alert.gif" alt="Flood alert icon">
+                    </div>
+                    
+                    <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                        {{ region.alertsInForce }}
+                    </span>
+
+                </div>
+
+                <span class="app-statistic-content govuk-heading-s">
+                    Flood alerts <span class="app-no-wrap">in-force</span>
+                </span>
+
+            </div>
+
+            <div class="govuk-grid-column-one-third">
+
+                <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                    <div class="app-statistic-header-icon">
+                        <img src="/public/images/flood-warning-icons/warning.gif" alt="Flood warning icon">
+                    </div>
+                    
+                    <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                        {{ region.warningsInForce }}
+                    </span>
+
+                </div>
+
+                <span class="app-statistic-content govuk-heading-s">
+                    Flood warnings <span class="app-no-wrap">in-force</span>
+                </span>
+
+            </div>
+
+            <div class="govuk-grid-column-one-third">
+
+                <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                    <div class="app-statistic-header-icon">
+                        <img src="/public/images/flood-warning-icons/severe-warning.gif" alt="Severe flood warning icon">
+                    </div>
+                    
+                    <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                        {{ region.severeWarningsInForce }}
+                    </span>
+
+                </div>
+
+                <span class="app-statistic-content govuk-heading-s">
+                    Severe flood warnings <span class="app-no-wrap">in-force</span>
+                </span>
+
+            </div>
+
+            {% set situationArray = region | regionSituationArray %}
+
+            {{ govukTable({
+                caption: 'Area situation',
+                captionClasses: 'govuk-visually-hidden',
+                firstCellIsHeader: false,
+                attributes: {
+                    'data-module': 'moj-sortable-table'
+                },
+                head: [
+                    {
+                        text: 'Target Area',
+                        attributes: {
+                            'aria-sort': 'none'
+                        }
+                    },
+                    {
+                        text: 'Type',
+                        attributes: {
+                            'aria-sort': 'none'
+                        }
+                    },
+                    {
+                        text: 'Update or remove due',
+                        attributes: {
+                            'aria-sort': 'ascending'
+                        }
+                    }
+                ],
+                rows: situationArray | situationTableRows('/area/search?next-page=#root#/area-details&error-page=#root#/region-overview', data.currentDate)
+            }) }}
+
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+            
+            <h2 class="govuk-heading-m">Area quick actions</h2>
+
+            <ul class="govuk-list">
+                <li>
+                    <a href="area-code?ta-type=alert">Issue a new alert</a>
+                </li>
+                <li>
+                    <a href="area-code?ta-type=warning">Issue a new warning</a>
+                </li>
+                <li>
+                    <a href="#">View send and call success rates</a>
+                </li>
+            </ul>
+
+            <h2 class="govuk-heading-m">All flood target areas</h2>
+            <ul class="govuk-list">
+                <li>
+                    <a href="target-area-list?ta-type=warning">{{ region.warningAreas | length }} flood warning target areas</a>
+                </li>
+                <li>
+                    <a href="target-area-list?ta-type=alert">{{ region.alertAreas | length }} flood alert target areas</a>
+                </li>
+            </ul>
+
+            <h2 class="govuk-heading-m">Notifications</h2>
+            <div class="app-notification govuk-!-margin-bottom-4">
+                {% set notificationArea = situationArray[situationArray | length - 1] %}
+                <h3 class="govuk-heading-s">Email problem</h3>
+                <p>The email success rate is less than 70% for the {{ notificationArea.type | sentenceCase }} issued for {{ notificationArea.notation }} at {{ notificationArea.issueDate | getTime }} {{ notificationArea.issueDate | friendlyDate }}</p>
+                <p class="govuk-!-margin-bottom-2">
+                    <a href="#">View details</a>
+                </p>
+            </div>
+            <div class="app-notification govuk-!-margin-bottom-4">
+                {% set notificationArea = situationArray[situationArray | length - 2] %}
+                <h3 class="govuk-heading-s">Telephone call problem</h3>
+                <p>The telephone call success rate is less than 65% for the {{ notificationArea.type | sentenceCase }} issued for {{ notificationArea.notation }} at {{ notificationArea.issueDate | getTime }} {{ notificationArea.issueDate | friendlyDate }}.</p>
+                <p class="govuk-!-margin-bottom-2">
+                    <a href="#">View details</a>
+                </p>
+            </div>
+            <div class="app-notification govuk-!-margin-bottom-4">
+                {% set notificationArea = situationArray[situationArray | length - 2] %}
+                <h3 class="govuk-heading-s">Upcoming system outage</h3>
+                <p>FWIS will be down for scheduled maintanence from 02:30 to 05:30 on 20 August 2021.</p>
+            </div>
+        </div>
+
+</div>
+
+{% endblock %}
