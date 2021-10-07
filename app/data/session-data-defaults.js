@@ -22,7 +22,7 @@ const faker = require('faker')
 module.exports = {
 	// Insert values here
 	regions: false,
-	'example-templates': {
+	savedTemplates: {
 		'example-1': {
 			title: 'Levels are more than 0.8mAOD',
 			message:

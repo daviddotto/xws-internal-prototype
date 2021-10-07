@@ -1,10 +1,4 @@
-const isValidDate = (d) => {
-	return d instanceof Date && !isNaN(d)
-}
-
-const isNotThere = (input) => {
-	return !input || input.trim() == '' || input.trim() == 'undefined'
-}
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (env) {
 	/**
@@ -13,6 +7,24 @@ module.exports = function (env) {
 	 * gov.uk core filters by creating filter methods of the same name.
 	 * @type {Object}
 	 */
+
+	 const isValidDate = (d) => {
+		return d instanceof Date && !isNaN(d)
+	}
+	
+	const isNotThere = (input) => {
+		return !input || input.trim() == '' || input.trim() == 'undefined'
+	}
+	
+	const processTag = (tagName, content, tagContent, formatForPreview) => {
+		let regEx = new RegExp(`\\({2}${tagName}\\){2}`, 'g')
+		// Add marks around the content being replaced if formatForPreview is true
+		if (formatForPreview) {
+			tagContent = `<mark class="app-preview-tag-mark">${tagContent}</mark>`
+		}
+		return content.replace(regEx, tagContent)
+	}
+	
 	var filters = {}
 
 	const numberToMonthString = (input) => {
@@ -587,19 +599,68 @@ module.exports = function (env) {
 		return string_to_slug(name)
 	}
 
-	filters.templateToContent = (template, area) => {
+	filters.templateToContent = (template, area, formatForPreview) => {
 		var processedString = template
 
-		const todayString = filters.friendlyDate(new Date())
-		processedString = processedString.replace(/\({2}today\){2}/g, todayString)
+		// Today's date
 
-		const areaDescription = area.description
-		processedString = processedString.replace(
-			/\({2}area description\){2}/g,
-			areaDescription
+		const todayString = filters.friendlyDate(new Date())
+		processedString = processTag('today', processedString, todayString, formatForPreview)
+
+		// Tomorrow's date
+
+		const tomorrowString = filters.friendlyDate(
+			new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+		)
+		processedString = processTag(
+			'tomorrow',
+			processedString,
+			tomorrowString,
+			formatForPreview
 		)
 
+		// Yesterday's date
+
+		const yesterdayString = filters.friendlyDate(
+			new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+		)
+		processedString = processTag(
+			'yesterday',
+			processedString,
+			yesterdayString,
+			formatForPreview
+		)
+
+		// Area description
+
+		const areaDescription = area.description
+		processedString = processTag('area description', processedString, areaDescription, formatForPreview)
+
+		// Area name
+
+		const areaName = area.label
+		processedString = processTag('area name', processedString, areaName, formatForPreview)
+
+		// Regex for anything beggining with ** and ending with **
+
+		const regex = /\*\*(.*?)\*\*/g
+
+
+		if (formatForPreview) {
+
+			// Surround matches with <mark class="app-preview-insertion-point"> and </mark>
+
+			processedString = processedString.replace(regex, function (match, p1) {
+				return '<mark class="app-preview-insertion-point">**' + p1 + '**</mark>'
+			})
+
+		}
+
 		return processedString
+	}
+
+	filters.uuid = () => {
+		return uuidv4()
 	}
 
 	/* ------------------------------------------------------------------

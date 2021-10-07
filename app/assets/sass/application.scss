@@ -250,3 +250,24 @@ a.app-link-destructive {
 		margin-right: 1em;
 	}
 }
+
+.app-saved-message-preview {
+	line-height: 1.8;
+	mark {
+		background-color: govuk-colour('yellow');
+		color: govuk-colour('black');
+		text-shadow: 0 0 2px white;
+		padding: 0.25em 0.5em;
+		border-radius: 3px;
+		margin-right: 0.1em;
+		font-weight: bold;
+	}
+}
+
+mark.app-preview-tag-mark {
+	background-color: rgba(govuk-colour('light-blue'), 0.25);
+}
+
+mark.app-preview-insertion-point {
+	background-color: rgba(govuk-colour('red'), 0.25);
+}

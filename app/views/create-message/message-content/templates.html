@@ -59,45 +59,50 @@
                     Start with a saved message for this target area
                 </h2>
 
-                {% for id, template in data['example-templates'] %}
-                    <div class="app-template-card">
-                        <h3 class="govuk-heading-s govuk-!-margin-top-3">
-                            {{ template.title }}
-                        </h3>
-                        <p class="govuk-hint">
-                            Added by {{ template.author }} on 23 July 2021
-                        </p>
-                        <p>
-                            {{ template.message | templateToContent(area) }}
-                        </p>
-                        <ul class="govuk-list app-template-option-list">
-                            <li>
-                                <a href="#">
-                                    Change
-                                    <span class="govuk-visually-hidden">
-                                        saved message
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="app-link-destructive" href="#">
-                                    Remove
-                                    <span class="govuk-visually-hidden">
-                                        saved message
-                                    </span>
-                                </a>
-                            </li>
-                        </ul>
-                        {{ govukButton ({
-                            text: 'Start with this message',
-                            href: '#'
-                        }) }}
-                    </div>
+
+                {{ data.savedTemplates | debug }}
+
+                {% for id, template in data.savedTemplates %}
+                    {% if template.message | length %}
+                        <div class="app-template-card">
+                            <h3 class="govuk-heading-s govuk-!-margin-top-3">
+                                {{ template.title }}
+                            </h3>
+                            <p class="govuk-hint">
+                                Added by {{ template.author }} on 23 July 2021
+                            </p>
+                            <p>
+                                {{ template.message | templateToContent(area) }}
+                            </p>
+                            <ul class="govuk-list app-template-option-list">
+                                <li>
+                                    <a href="edit-template?selectedTemplate={{ id }}">
+                                        Change
+                                        <span class="govuk-visually-hidden">
+                                            saved message
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="app-link-destructive" href="#">
+                                        Remove
+                                        <span class="govuk-visually-hidden">
+                                            saved message
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                            {{ govukButton ({
+                                text: 'Start with this message',
+                                href: '#'
+                            }) }}
+                        </div>
+                    {% endif %}
                 {% endfor %}
 
                 {{ govukButton ({
                     text: 'Add a new saved message',
-                    href: 'create-template',
+                    href: 'edit-template?selectedTemplate=' + ('' | uuid),
                     classes: 'govuk-!-margin-top-4'
                 }) }}
 
@@ -123,7 +128,7 @@
                         Remove all saved messages from this target area
                     </a>
                 </li>
-            
+            </ul>
         </div>
 
 </div>

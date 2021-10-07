@@ -163,7 +163,10 @@ const textToSpeechRoutes = require('./routes/text-to-speech')
 router.use('/text-to-speech', textToSpeechRoutes)
 
 const areaRoutes = require('./routes/area')
-const { regions } = require('./data/session-data-defaults')
 router.use('/area', areaRoutes)
+
+const templateProcessingRoutes = require('./routes/template-processing')
+router.use('/template-processing', templateProcessingRoutes)
+
 
 module.exports = router
