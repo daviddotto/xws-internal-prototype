@@ -1,17 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
+const filters = require('./filters')(process.env)
+
 const axios = require('axios')
 
 // Add your routes here - above the module.exports line
-
-const randomDate = (maxDaysAgo) => {
-	const now = new Date()
-	var start = now - 1000 * 60 * 60 * 24 * maxDaysAgo
-	var end = now
-	var date = new Date(+start + Math.random() * (end - start))
-	return date
-}
 
 router.all('*', (req, res, next) => {
 	req.session.data.currentDate = new Date()
@@ -98,7 +92,7 @@ router.all('*', (req, res, next) => {
 						var randomIndex = Math.floor(
 							Math.random() * region.alertAreas.length
 						)
-						var issueDate = randomDate(0.6)
+						var issueDate = filters.randomDate(0.6)
 						var updateDate = new Date(issueDate.getTime() + 1000 * 60 * 60 * 12)
 						outputObject.regions[regionName].alertAreas[randomIndex] = {
 							...outputObject.regions[regionName].alertAreas[randomIndex],
@@ -111,7 +105,7 @@ router.all('*', (req, res, next) => {
 						var randomIndex = Math.floor(
 							Math.random() * region.warningAreas.length
 						)
-						var issueDate = randomDate(0.4)
+						var issueDate = filters.randomDate(0.4)
 						var updateDate = new Date(issueDate.getTime() + 1000 * 60 * 60 * 8)
 						outputObject.regions[regionName].warningAreas[randomIndex] = {
 							...outputObject.regions[regionName].warningAreas[randomIndex],
@@ -167,6 +161,5 @@ router.use('/area', areaRoutes)
 
 const templateProcessingRoutes = require('./routes/template-processing')
 router.use('/template-processing', templateProcessingRoutes)
-
 
 module.exports = router

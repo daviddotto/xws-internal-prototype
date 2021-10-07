@@ -4,8 +4,15 @@
 
 {% set template = data.savedTemplates[data.selectedTemplate] %}
 
+{% if selectedTemplate %}
+    {% set pageTitle = 'Add a new saved message' %}
+    <h1 class="govuk-heading-xl">Add a new saved message</h1>
+{% else %}
+    {% set pageTitle = 'Change saved message' %}  
+{% endif %}
+
 {% block pageTitle %}
-    Add a new saved message
+    {{ pageTitle }}
 {% endblock %}
 
 {% block contextBanner %}
@@ -32,10 +39,11 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        {% if selectedTemplate %}
-            <h1 class="govuk-heading-xl">Add a new saved message</h1>
-        {% else %}  
-            <h1 class="govuk-heading-xl">Change saved message</h1>
+        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+        {% if template.author | length %}
+            <p class="govuk-hint">
+                Saved by {{ template.author }} on {{ template.date | friendlyDate }}
+            </p>
         {% endif %}
     </div>
 </div>
@@ -111,7 +119,7 @@
 
                 {{ govukInput({
                     id: 'template-name',
-                    name: 'savedTemplates[' + data.selectedTemplate + '].title',
+                    name: 'savedTemplates[' + data.selectedTemplate + '][title]',
                     label: {
                         text: 'Template name'
                     },
@@ -121,7 +129,7 @@
 
                 {{ govukCharacterCount ({
                     id: 'template-content',
-                    name: 'savedTemplates[' + data.selectedTemplate + '].message',
+                    name: 'savedTemplates[' + data.selectedTemplate + '][message]',
                     maxlength: '1500',
                     rows: 18,
                     value: data['template-content'] if data['template-content'] else '',
@@ -132,9 +140,11 @@
                         html: hintHTML
                     },
                     value: template.message
-                }) }} 
+                }) }}
 
-                <input type="hidden" id="template-object-input" name="savedTemplatesTEST[{{ data.selectedTemplate }}]">
+                <input type="hidden" name="savedTemplates[{{ data.selectedTemplate }}][author]" value="you">
+
+                <input type="hidden" name="savedTemplates[{{ data.selectedTemplate }}][date]" value="{{ data.currentDate }}">
 
                 {{ govukButton ({
                     html: 'Save message'
@@ -172,7 +182,6 @@
         var $templateTitleInput = $('#template-name');
         var $templateTextArea = $('#template-content');
         var $preview = $('.app-saved-message-preview');
-        var $templateObjectInput = $('#template-object-input');
         var areaJSON = {{ area | debug | safe }};
         var author = '{{ template.author }}';
 
@@ -181,14 +190,6 @@
 
         // Update the preview
         function updatePreview(templateContent) {
-            
-            var templateObject = {
-                title: $templateTitleInput.val(),
-                message: templateContent,
-                author: author || 'you'
-            }
-
-            $templateObjectInput.val(JSON.stringify(templateObject));
 
             // Make call to template processing service
             $.post( '/template-processing/fetch', {

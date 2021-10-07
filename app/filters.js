@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
 
 module.exports = function (env) {
 	/**
@@ -8,14 +8,14 @@ module.exports = function (env) {
 	 * @type {Object}
 	 */
 
-	 const isValidDate = (d) => {
+	const isValidDate = (d) => {
 		return d instanceof Date && !isNaN(d)
 	}
-	
+
 	const isNotThere = (input) => {
 		return !input || input.trim() == '' || input.trim() == 'undefined'
 	}
-	
+
 	const processTag = (tagName, content, tagContent, formatForPreview) => {
 		let regEx = new RegExp(`\\({2}${tagName}\\){2}`, 'g')
 		// Add marks around the content being replaced if formatForPreview is true
@@ -24,7 +24,7 @@ module.exports = function (env) {
 		}
 		return content.replace(regEx, tagContent)
 	}
-	
+
 	var filters = {}
 
 	const numberToMonthString = (input) => {
@@ -605,7 +605,12 @@ module.exports = function (env) {
 		// Today's date
 
 		const todayString = filters.friendlyDate(new Date())
-		processedString = processTag('today', processedString, todayString, formatForPreview)
+		processedString = processTag(
+			'today',
+			processedString,
+			todayString,
+			formatForPreview
+		)
 
 		// Tomorrow's date
 
@@ -634,26 +639,33 @@ module.exports = function (env) {
 		// Area description
 
 		const areaDescription = area.description
-		processedString = processTag('area description', processedString, areaDescription, formatForPreview)
+		processedString = processTag(
+			'area description',
+			processedString,
+			areaDescription,
+			formatForPreview
+		)
 
 		// Area name
 
 		const areaName = area.label
-		processedString = processTag('area name', processedString, areaName, formatForPreview)
+		processedString = processTag(
+			'area name',
+			processedString,
+			areaName,
+			formatForPreview
+		)
 
 		// Regex for anything beggining with ** and ending with **
 
 		const regex = /\*\*(.*?)\*\*/g
 
-
 		if (formatForPreview) {
-
 			// Surround matches with <mark class="app-preview-insertion-point"> and </mark>
 
 			processedString = processedString.replace(regex, function (match, p1) {
 				return '<mark class="app-preview-insertion-point">**' + p1 + '**</mark>'
 			})
-
 		}
 
 		return processedString
@@ -661,6 +673,14 @@ module.exports = function (env) {
 
 	filters.uuid = () => {
 		return uuidv4()
+	}
+
+	filters.randomDate = (maxDaysAgo) => {
+		const now = new Date()
+		var start = now - 1000 * 60 * 60 * 24 * maxDaysAgo
+		var end = now
+		var date = new Date(+start + Math.random() * (end - start))
+		return date
 	}
 
 	/* ------------------------------------------------------------------

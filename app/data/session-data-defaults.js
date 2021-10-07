@@ -18,6 +18,7 @@ Example usage:
 */
 
 const faker = require('faker')
+const filters = require('../filters')(process.env)
 
 module.exports = {
 	// Insert values here
@@ -28,18 +29,21 @@ module.exports = {
 			message:
 				'This message has been issued because there is a possibility of some flooding of homes and businesses between **time** and **time** today, ((today)). Water levels are expected to be higher than usual, due to the forecast weather conditions as a surge coincides with the high water. Areas most at risk are ((area description)). For more info refer to local tide tables. Take care on coastal roads and footpaths, and don’t put yourself in unnecessary danger. We are closely monitoring the situation and not expecting the situation to escalate, or to issue anything else for the following water level rises.',
 			author: faker.name.findName(),
+			date: filters.randomDate(180),
 		},
 		'example-2': {
 			title: 'Levels are more than 1.5mAOD',
 			message:
 				'This message has been issued because there is a possibility of some flooding of homes and businesses between **time** and **time** today, ((today)). Water levels are expected to be higher than usual, due to the forecast weather conditions as a surge coincides with the high water. Areas most at risk are ((area description)). For more info refer to local tide tables). Take care on coastal roads and footpaths, and don’t put yourself in unnecessary danger. We are closely monitoring the situation and not expecting the situation to escalate, or to issue anything else for the following water level rises.',
 			author: faker.name.findName(),
+			date: filters.randomDate(180),
 		},
 		'example-3': {
 			title: 'Levels are more than 1.2mAOD',
 			message:
 				'This message has been issued because there is a possibility of some flooding of homes and businesses between **time** and **time** today, ((today)). Water levels are expected to be higher than usual, due to the forecast weather conditions as a surge coincides with the high water. Areas most at risk are ((area description)). For more info refer to local tide tables). Take care on coastal roads and footpaths, and don’t put yourself in unnecessary danger. We are closely monitoring the situation and not expecting the situation to escalate, or to issue anything else for the following water level rises.',
 			author: faker.name.findName(),
+			date: filters.randomDate(180),
 		},
 	},
 	pronunciations: [

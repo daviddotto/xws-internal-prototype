@@ -59,9 +59,6 @@
                     Start with a saved message for this target area
                 </h2>
 
-
-                {{ data.savedTemplates | debug }}
-
                 {% for id, template in data.savedTemplates %}
                     {% if template.message | length %}
                         <div class="app-template-card">
@@ -69,10 +66,10 @@
                                 {{ template.title }}
                             </h3>
                             <p class="govuk-hint">
-                                Added by {{ template.author }} on 23 July 2021
+                                Saved by {{ template.author }} on {{ template.date | friendlyDate }}
                             </p>
-                            <p>
-                                {{ template.message | templateToContent(area) }}
+                            <p class="app-saved-message-preview">
+                                {{ template.message | templateToContent(area, true) | safe }}
                             </p>
                             <ul class="govuk-list app-template-option-list">
                                 <li>
@@ -84,7 +81,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="app-link-destructive" href="#">
+                                    <a class="app-link-destructive" href="remove-template?selectedTemplate={{ id }}">
                                         Remove
                                         <span class="govuk-visually-hidden">
                                             saved message
@@ -94,7 +91,7 @@
                             </ul>
                             {{ govukButton ({
                                 text: 'Start with this message',
-                                href: '#'
+                                href: '../spoken-message?message-content=' + template.message | templateToContent(area, false) 
                             }) }}
                         </div>
                     {% endif %}

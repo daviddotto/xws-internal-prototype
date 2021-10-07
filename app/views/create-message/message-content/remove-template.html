@@ -1,0 +1,70 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% set template = data.savedTemplates[data.selectedTemplate] %}
+
+{% set pageTitle = 'Remove saved message' %} 
+
+{% block pageTitle %}
+    {{ pageTitle }}
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+        <p class="govuk-hint">
+            Saved by {{ template.author }} on {{ template.date | friendlyDate }}
+        </p>
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-one-half">
+            
+            <h2 class="govuk-heading-m">
+                Message preview
+            </h2>
+
+            <p class="app-saved-message-preview govuk-!-margin-bottom-6">
+                {{ template.message | templateToContent(area, true) | safe }}
+            </p>
+
+            {{ govukButton ({
+                text: 'Remove saved message',
+                href: 'templates?savedTemplates[' + data.selectedTemplate + ']=',
+                classes: 'govuk-button--warning'
+            }) }}
+
+            <p>
+                <a href="templates">Cancel and go back</a>
+            </p>
+
+        </div>
+
+</div>
+
+{% endblock %}
