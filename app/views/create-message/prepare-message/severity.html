@@ -1,0 +1,84 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Warning severity
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+{{ ('certainty' | redirect | safe) if area.type != 'warning' }}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                
+                <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                <h1 class="govuk-heading-l">Flooding severity</h1>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../check">
+            {% else %}
+            <form action="certainty">
+            {% endif %}
+
+                {{ govukRadios ({
+                    idPrefix: 'message-part--severity',
+                    name: 'message-part--severity',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle
+                        }
+                    },
+                    hint: {
+                            text: 'Only select ‘Severe warning’ if it has been requested by a Flood Warning Duty Officer.'
+                    },
+                    items: [
+                        {
+                            text: 'Warning',
+                            value: 'Warning',
+                            checked: true if data['message-part--severity'] != 'Severe warning'
+                        },
+                        {
+                            text: 'Severe warning',
+                            value: 'Severe warning'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

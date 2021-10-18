@@ -1,0 +1,87 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Flooding certainty
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Flooding certainty</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../check">
+            {% else %}
+            <form action="response">
+            {% endif %}
+
+                {{ govukRadios ({
+                    idPrefix: 'message-part--certainty',
+                    name: 'message-part--certainty',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle,
+                            classes: 'govuk-!-margin-bottom-4'
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'Flooding has started',
+                            value: 'Observed',
+                            checked: true if data['message-part--certainty'] == 'Observed'
+                        },
+                        {
+                            text: 'Flooding is expected',
+                            value: 'Likely',
+                            checked: true if data['message-part--certainty'] == 'Likely'
+                        },
+                        {
+                            text: 'Flooding is possible',
+                            value: 'Possible',
+                            checked: true if data['message-part--certainty'] == 'Possible'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

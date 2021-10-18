@@ -47,7 +47,7 @@ $govuk-assets-path: '/govuk/assets/';
 .govuk-tag {
 	border-radius: 3px;
 	padding-bottom: 5px;
-	box-shadow: 0 0 0 0.1em currentColor;
+	box-shadow: 0 0 0 2px currentColor;
 }
 
 html {
@@ -270,4 +270,8 @@ mark.app-preview-tag-mark {
 
 mark.app-preview-insertion-point {
 	background-color: rgba(govuk-colour('red'), 0.25);
+}
+
+.govuk-tag + .govuk-tag {
+	margin-left: 0.5em;
 }

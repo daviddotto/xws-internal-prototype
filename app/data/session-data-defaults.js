@@ -23,6 +23,48 @@ const filters = require('../filters')(process.env)
 module.exports = {
 	// Insert values here
 	regions: false,
+	messageParts: {
+		certainty: {
+			Observed: {
+				short: 'flooding started',
+				long: 'flooding has started',
+			},
+			Likely: {
+				short: 'flooding expected',
+				long: 'flooding is expected',
+			},
+			Possible: {
+				short: 'flooding possible',
+				long: 'flooding is possible',
+			},
+		},
+		response: {
+			None: {
+				short: 'no action needed',
+				long: 'no action needed',
+			},
+			Monitor: {
+				short: 'monitor situation',
+				long: 'monitor the situation',
+			},
+			Avoid: {
+				short: 'avoid area',
+				long: 'avoid the are if you can',
+			},
+			Execute: {
+				short: 'act now',
+				long: 'carry out your flood plan',
+			},
+			Prepare: {
+				short: 'be ready',
+				long: 'be ready to carry out your flood plan',
+			},
+			Evacuate: {
+				short: 'evacuate if able',
+				long: 'evacuate the affected area if you are able',
+			},
+		},
+	},
 	savedTemplates: {
 		'example-1': {
 			title: 'Levels are more than 0.8mAOD',

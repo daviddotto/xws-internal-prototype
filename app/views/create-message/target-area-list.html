@@ -2,7 +2,7 @@
 
 {% set region = data.regions[data['selected-region']] %}
 {% set taType = data['ta-type'] %}
-{% set counties = region.warningAreas | areasGroupedByCounty if taType == 'warning' else region.alertAreas | areasGroupedByCounty %}
+{% set areas = region.warningAreas if taType == 'warning' else region.alertAreas %}
 
 {% block pageTitle %}
     Flood {{ taType }} target areas in {{ region.name }}
@@ -36,21 +36,6 @@
 <div class='govuk-grid-row'>
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">Flood {{ taType }} target areas in {{ region.name }}</h1>
-        {% set detailsContentHTML %}
-            <ul class="govuk-list">
-                <li>
-                    <a href="#">Manage flood {{ taType }} target area groups</a>
-                </li>
-                <li>
-                    <a href="#">Add a new flood {{ taType }} target area</a>
-                </li>
-            </ul>
-        {% endset %}
-        
-        {{ govukDetails({
-            summaryText: 'Manage flood ' + taType + ' target areas',
-            html: detailsContentHTML
-        }) }}
     </div>
 </div>
 
@@ -58,49 +43,37 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-            <h2 class="govuk-heading-m">Flood {{ taType }} target area by county</h2>
-
             <div class="app-target-area-list">
 
-                {% for countyName, county in counties | dictsort %}
+                <ul class="govuk-list">
 
-                    <div class="app-county-group">
+                    {% for area in areas | sort(false, false, 'notation') %}
 
-                        <h3 id="{{ countyName | nameAsSlug }}" class="govuk-heading-s">{{ countyName }}</h2>
+                        <li class="app-target-area-summary {{ 'app-target-area-in-force' if area.issueDate }} govuk-!-margin-bottom-4">
+                            
+                            <div class="app-target-area-header govuk-!-margin-bottom-2">
+                                <span><a href="/area/search?area-code={{ area.notation }}&next-page=/create-message/area-details&error-page=/">{{ area.notation }}</a></span>
+                                <span>
+                                    {% for tag in area.tags %}
+                                        {{ govukTag({
+                                            text: tag,
+                                            classes: 'govuk-tag--' + tag | colorForTag
+                                        }) }}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <h3 class="govuk-heading-s govuk-!-margin-bottom-0">{{ area.label }}</h3>
+                            <p>
+                                {{ area.description }}
+                            </p>
+                            {% if area.issueDate %}
+                                <span class="app-in-force-label">{{ taType | sentenceCase }} in force</span>
+                            {% endif %}
+                        </li>
 
-                        <ul class="govuk-list">
-
-                            {% for area in county %}
-
-                                <li class="app-target-area-summary {{ 'app-target-area-in-force' if area.issueDate }} govuk-!-margin-bottom-4">
-                                    
-                                    <div class="app-target-area-header govuk-!-margin-bottom-2">
-                                        <span><a href="/area/search?area-code={{ area.notation }}&next-page=/create-message/area-details&error-page=/">{{ area.notation }}</a></span>
-                                        <span>
-                                            {% for tag in area.tags %}
-                                                {{ govukTag({
-                                                    text: tag,
-                                                    classes: 'govuk-tag--' + tag | colorForTag
-                                                }) }}
-                                            {% endfor %}
-                                        </span>
-                                    </div>
-                                    <h3 class="govuk-heading-s govuk-!-margin-bottom-0">{{ area.label }}</h3>
-                                    <p>
-                                        {{ area.description }}
-                                    </p>
-                                    {% if area.issueDate %}
-                                        <span class="app-in-force-label">{{ taType | sentenceCase }} in force</span>
-                                    {% endif %}
-                                </li>
-
-                            {% endfor %}
-
-                        </ul>
-
-                    </div>
-
-                {% endfor %}
+                    {% endfor %}
+                
+                </ul>
 
             </div>
 
@@ -186,16 +159,6 @@
                 classes: 'govuk-button--secondary reset-filters'
             }) }}
 
-            <h2 class="govuk-heading-m">Select a county to find in list</h2>
-            <ul class="govuk-list">
-                {% for countyName, county in counties | dictsort %}
-                <li>
-                    <a href="#{{ countyName | nameAsSlug }}">
-                        {{ countyName }}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
         </div>
         <div class="govuk-grid-column-one-third sticky-column govuk-!-padding-bottom-4">
             <p>

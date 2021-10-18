@@ -1,0 +1,102 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Response needed
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Response needed</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../check">
+            {% else %}
+            <form action="instruction">
+            {% endif %}
+
+                {{ govukRadios ({
+                    idPrefix: 'message-part--response',
+                    name: 'message-part--response',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle,
+                            classes: 'govuk-!-margin-bottom-4'
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'No action needed',
+                            value: 'None',
+                            checked: true if data['message-part--response'] == 'None'
+                        },
+                        {
+                            text: 'Monitor the situation',
+                            value: 'Monitor',
+                            checked: true if data['message-part--response'] == 'Monitor'
+                        },
+                        {
+                            text: 'Be ready to carry out flood plan',
+                            value: 'Prepare',
+                            checked: true if data['message-part--response'] == 'Prepare'
+                        },
+                        {
+                            text: 'Carry out flood plan',
+                            value: 'Execute',
+                            checked: true if data['message-part--response'] == 'Execute'
+                        },
+                        {
+                            text: 'Avoid the area',
+                            value: 'Avoid',
+                            checked: true if data['message-part--response'] == 'Avoid'
+                        },
+                        {
+                            text: 'Evacuate the area if possible',
+                            value: 'Evacuate',
+                            checked: true if data['message-part--response'] == 'Evacuate'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
