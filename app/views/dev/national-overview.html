@@ -1,0 +1,548 @@
+{% extends 'layout_unbranded.html' %}
+
+{% block pageTitle %}
+    National flooding overview
+{% endblock %}
+
+{% block headerNav %}
+
+<nav>
+    <ul id="navigation" class="govuk-header__navigation app-xws-menu-flexbox" aria-label="Navigation menu">
+        <li class="govuk-header__navigation-item">
+            <a class="govuk-header__link" href="#">
+                Sign out
+            </a>
+        </li>
+    </ul>
+</nav>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <h1 class="govuk-heading-xl">National flooding overview</h1>
+
+        </div>
+
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+
+        <div class="govuk-grid-column-one-third">
+
+            <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                <div class="app-statistic-header-icon">
+                    <img src="/public/images/flood-warning-icons/alert.gif" alt="Flood alert icon">
+                </div>
+                
+                <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                    117
+                </span>
+
+            </div>
+
+            <span class="app-statistic-content govuk-heading-m">
+                Flood alerts in-force
+            </span>
+
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+            <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                <div class="app-statistic-header-icon">
+                    <img src="/public/images/flood-warning-icons/warning.gif" alt="Flood warning icon">
+                </div>
+                
+                <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                    33
+                </span>
+
+            </div>
+
+            <span class="app-statistic-content govuk-heading-m">
+                Flood warnings in-force
+            </span>
+
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+            <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                <div class="app-statistic-header-icon">
+                    <img src="/public/images/flood-warning-icons/severe-warning.gif" alt="Severe flood warning icon">
+                </div>
+                
+                <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                    6
+                </span>
+
+            </div>
+
+            <span class="app-statistic-content govuk-heading-m">
+                Severe flood warnings in-force
+            </span>
+
+        </div>
+
+</div>
+
+<div class='govuk-grid-row'>
+    <div class="govuk-grid-column-full">
+        
+        <table class="govuk-table" data-module="moj-sortable-table">
+  
+  <caption class="govuk-table__caption govuk-visually-hidden">Areas</caption>
+  
+  
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+    
+      <th scope="col" class="govuk-table__header" aria-sort="ascending">Area</th>
+    
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Alerts in force</th>
+    
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Warnings in force</th>
+    
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">Severe warnings in force</th>
+    
+    </tr>
+  </thead>
+  
+  <tbody class="govuk-table__body">
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Cumbria and Lancashire">Cumbria and Lancashire</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="9"
+          >9</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Devon and Cornwall">Devon and Cornwall</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="11"
+          >11</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="2"
+          >2</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=East Anglia">East Anglia</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="10"
+          >10</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="1"
+          >1</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=East Midlands">East Midlands</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="12"
+          >12</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Gtr Mancs Mersey and Ches">Gtr Mancs Mersey and Ches</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="9"
+          >9</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="1"
+          >1</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Herts and North London">Herts and North London</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="2"
+          >2</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="1"
+          >1</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Kent S London and E Sussex">Kent S London and E Sussex</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="4"
+          >4</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="1"
+          >1</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Lincs and Northants">Lincs and Northants</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="4"
+          >4</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="2"
+          >2</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=North East">North East</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="6"
+          >6</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="2"
+          >2</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Solent and South Downs">Solent and South Downs</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="13"
+          >13</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Thames">Thames</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="12"
+          >12</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Wessex">Wessex</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="5"
+          >5</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=West Midlands">West Midlands</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="8"
+          >8</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="1"
+          >1</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="0"
+          >0</td>
+          
+        
+        </tr>
+      
+    
+      
+        <tr class="govuk-table__row">
+        
+          
+          
+          <td class="govuk-table__cell"
+          ><a href="region-overview?selected-region=Yorkshire">Yorkshire</a></td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="11"
+          >11</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="3"
+          >3</td>
+          
+        
+          
+          
+          <td class="govuk-table__cell govuk-table__cell--numeric" data-sort-value="2"
+          >2</td>
+          
+        
+        </tr>
+      
+    
+  </tbody>
+</table>
+
+    </div>
+</div>
+
+
+{% endblock %}

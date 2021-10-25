@@ -46,7 +46,7 @@
             <form action="message">
             {% endif %}
 
-                {% set autoHeadline = 'Flood ' + area.type + ' issued for ' %}
+                {% set autoHeadline = 'Flood ' + area.type + ' for ' %}
                 {% set autoHeadline = autoHeadline + area.label %}
                 {% set autoHeadline = autoHeadline + ': ' + data.messageParts.response[data['message-part--response']].short | sentenceCase %}
 
