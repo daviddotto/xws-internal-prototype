@@ -49,7 +49,7 @@ module.exports = {
 			},
 			Avoid: {
 				short: 'avoid area',
-				long: 'avoid the are if you can',
+				long: 'avoid the area if you can',
 			},
 			Execute: {
 				short: 'act now',

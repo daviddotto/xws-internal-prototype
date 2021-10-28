@@ -561,6 +561,20 @@ module.exports = function (env) {
 		return counties
 	}
 
+	filters.waterCatchmentsFromAreas = (areasArray) => {
+		var waterCatchments = []
+		for (area of areasArray) {
+			var areaWaterCatchments = area.riverOrSea.split(',')
+			for (waterCatchment of areaWaterCatchments) {
+				let cleansedWaterCatchment = filters.titleCase(waterCatchment.trim())
+				if (waterCatchments.indexOf(cleansedWaterCatchment) == -1) {
+					waterCatchments.push(cleansedWaterCatchment)
+				}
+			}
+		}
+		return waterCatchments
+	}
+
 	filters.colorForTag = (tag) => {
 		switch (tag) {
 			case 'tidal':

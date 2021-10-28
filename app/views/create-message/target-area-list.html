@@ -66,6 +66,16 @@
                             <p>
                                 {{ area.description }}
                             </p>
+                            {% set areaWaterCatchments = [] %}
+                            {% set areaWaterCatchments = [area] | waterCatchmentsFromAreas %}
+                            {% if areaWaterCatchments | length %}
+                                
+                                <p>
+                                    <b>Catchment:</b>
+                                    {{ areaWaterCatchments | join(', ') }}
+                                </p>
+                                
+                            {% endif %}
                             {% if area.issueDate %}
                                 <span class="app-in-force-label">{{ taType | sentenceCase }} in force</span>
                             {% endif %}
@@ -74,6 +84,37 @@
                     {% endfor %}
                 
                 </ul>
+
+                {% set insetTextHTML %}
+
+                    <h3 class="govuk-heading-s">No target areas match the filters</h3>
+                    
+                    <p>
+                        Make sure you are looking for <b>{{ taType }}</b> target areas in the <b>{{ region.name }}</b> area.
+                    </p>
+
+                    {% set inverseTaType = 'alert' if taType == 'warning' else 'warning' %}
+
+                    <p>
+                        <a href="?ta-type={{ inverseTaType }}">Go to {{ inverseTaType }} target areas in {{ region.name }}</a>
+                    </p>
+
+                    <p>
+                        <a href="/">Go to national overview to choose a different area</a>
+                    </p>
+
+                    {{ govukButton ({
+                        html: 'Reset filters',
+                        type: 'button',
+                        classes: 'govuk-button--secondary reset-filters'
+                    }) }}
+                    
+                {% endset %}
+
+                {{ govukInsetText ({
+                    html: insetTextHTML,
+                    classes: 'app-no-results'
+                }) }}
 
             </div>
 
@@ -89,7 +130,7 @@
                 classes: 'govuk-input--width-20',
                 label: {
                     text: 'By keyword or code',
-                    classes: 'govuk-input--width-20 app-label-bold'
+                    classes: 'govuk-input--width-20'
                 }
             }) }}
 
@@ -179,17 +220,7 @@
         function resetView() {
             $('.app-county-group').removeClass('app-county-is-empty')
             $('.app-target-area-summary').show()
-        }
-
-        function configureCountyGroups() {
-            $('.app-county-group').each(function() {
-                var $this = $(this)
-                var visableTargetAreas = $this.find('.app-target-area-summary:visible')
-                var visableCount = visableTargetAreas.length
-                if (visableCount == 0) {
-                    $this.addClass('app-county-is-empty')
-                }
-            })
+            resetHighlights($('.app-target-area-summary'))
         }
 
         function typeFilterChangeHandler() {
@@ -228,6 +259,33 @@
             })
         }
 
+        function resetHighlights($area) {
+            var childElements = $area.find('*:not(:has(*),.govuk-tag)')
+            childElements.each(function() {
+                var $this = $(this)
+                if ($this.is('mark')) {
+                    $this.replaceWith($this.text())
+                }
+            })
+        }
+
+        function highlightMatchesInArea($area, query) {
+
+            var childElements = $area.find('*:not(:has(*),.govuk-tag)')
+            childElements.each(function() {
+                var $this = $(this)
+                var text = $this.text()
+                var index = text.toLowerCase().indexOf(query.toLowerCase())
+                if (index > -1) {
+                    var before = text.substring(0, index)
+                    var match = text.substring(index, index + query.length)
+                    var after = text.substring(index + query.length)
+                    $this.html(before + '<mark class="app-highlight">' + match + '</mark>' + after)
+                }
+            })
+
+        }
+
         function textFilterChangeHandler(query) {
 
             var query = query || ''
@@ -236,14 +294,18 @@
 
                 var normalisedQuery = query.toLowerCase().trim()
 
-                var visableTargetAreas = $('.app-target-area-summary:visible')
+                var targetAreas = $('.app-target-area-summary')
 
-                visableTargetAreas.each(function() {
+                targetAreas.each(function() {
                     
                     var normalisedContent = $(this).text().toLowerCase().trim()
                     var hasMatches = normalisedContent.indexOf(normalisedQuery) > -1
 
-                    $(this).toggle(hasMatches)
+                    if (hasMatches) {
+                        highlightMatchesInArea($(this), query)
+                    } else {
+                        $(this).hide()
+                    }
                 
                 })
 
@@ -256,7 +318,7 @@
             textFilterChangeHandler(query)
             typeFilterChangeHandler()
             inForceFilterChangeHandler()
-            configureCountyGroups()
+            $('.app-no-results').toggle($('.app-target-area-summary:visible').length == 0)
         }
 
         function resetFilters() {

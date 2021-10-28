@@ -275,3 +275,24 @@ mark.app-preview-insertion-point {
 .govuk-tag + .govuk-tag {
 	margin-left: 0.5em;
 }
+
+.app-cell-indented {
+	padding-left: 0.5em;
+	&::before {
+		content: '⤷';
+		margin-right: 0.75em;
+	}
+}
+
+.govuk-table__cell--numeric.app-cell-secondary {
+	opacity: 0.5;
+	font-style: italic;
+	&::after {
+		content: '⤶';
+		margin-left: 0.75em;
+	}
+}
+
+th[id*='region-header'] {
+	font-weight: normal;
+}
