@@ -287,10 +287,6 @@ mark.app-preview-insertion-point {
 .govuk-table__cell--numeric.app-cell-secondary {
 	opacity: 0.5;
 	font-style: italic;
-	&::after {
-		content: '⤶';
-		margin-left: 0.75em;
-	}
 }
 
 th[id*='region-header'] {
