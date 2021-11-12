@@ -41,9 +41,9 @@
             {% endset %}
 
             {% if data.fromCheck %}
-            <form action="../check">
+            <form action="../../check">
             {% else %}
-            <form action="headline">
+            <form action="../headline">
             {% endif %}
 
                 {% set instructionHTML %}
@@ -69,7 +69,7 @@
                         }
                     },
                     hint: {
-                        text: 'In addition to the standard flooding instructions you can add local instructions. For example, road closures or specific flood locations.'
+                        html: 'In addition to the standard flooding instructions you can add local instructions. <br>For example, road closures or specific flood locations.'
                     },
                     items: [
                         {

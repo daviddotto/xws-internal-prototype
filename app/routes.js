@@ -94,10 +94,12 @@ router.all('*', (req, res, next) => {
 						)
 						var issueDate = filters.randomDate(0.6)
 						var updateDate = new Date(issueDate.getTime() + 1000 * 60 * 60 * 12)
+						var callSuccessRate = Math.floor(Math.random() * (89 - 56 + 1) + 56)
 						outputObject.regions[regionName].alertAreas[randomIndex] = {
 							...outputObject.regions[regionName].alertAreas[randomIndex],
 							issueDate,
 							updateDate,
+							callSuccessRate,
 						}
 					}
 					const numberOfDummyWarnings = Math.floor(Math.random() * (4 - 1) + 1)
@@ -107,10 +109,12 @@ router.all('*', (req, res, next) => {
 						)
 						var issueDate = filters.randomDate(0.4)
 						var updateDate = new Date(issueDate.getTime() + 1000 * 60 * 60 * 8)
+						var callSuccessRate = Math.floor(Math.random() * (89 - 56 + 1) + 56)
 						outputObject.regions[regionName].warningAreas[randomIndex] = {
 							...outputObject.regions[regionName].warningAreas[randomIndex],
 							issueDate,
 							updateDate,
+							callSuccessRate,
 							isSevere: Math.floor(Math.random() * 50) > 40,
 						}
 					}

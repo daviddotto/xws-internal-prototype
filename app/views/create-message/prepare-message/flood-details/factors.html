@@ -40,9 +40,9 @@
             {% endset %}
 
             {% if data.fromCheck %}
-            <form action="../check">
+            <form action="../../check">
             {% else %}
-            <form action="peak-time">
+            <form action="response">
             {% endif %}
 
                 {% set customHTML %}
@@ -129,6 +129,8 @@
                 
                 </div>
 
+                <input class="app-message-section" type="hidden" name="message-section--factors">
+
                 {{ govukButton ({
                     html: 'Continue'
                 }) }}
@@ -181,7 +183,7 @@
                     var processedMessage = reasonArray[0] == '*other*' ? ($('#message-part--factor-custom').val() ?? '<enter factor(s)>') : reasonArray[0]
                     messagePreview = 'Because ' + processedMessage
                 } else {
-                    messagePreview = 'Because '
+                    messagePreview = 'Because'
                     for (var i = 0; i < reasonArray.length; i++) {
                         var processedMessage = reasonArray[i] == '*other*' ? ($('#message-part--factor-custom').val() ?? '<enter factor(s)>') : reasonArray[i]
                         if (i == 0) {
@@ -194,16 +196,20 @@
                     }
                 }
             } else {
-                messagePreview = ''
+                messagePreview = false
             }
 
             // Update preview span
             if (messagePreview) {
+                $('.app-message-part-preview-container').show()
                 $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
-                $('.app-message-part-preview').html(messagePreview)
+                $('.app-message-part-preview').html(messagePreview + '.')
+                $('.app-message-section').val(messagePreview + '.')
             } else {
+                $('.app-message-part-preview-container').hide()
                 $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')
                 $('.app-message-part-preview').html('Enter details to see preview...')
+                $('.app-message-section').val('')
             }
         }
 

@@ -83,6 +83,16 @@
                             ({{ area.updateDate | getTime }} on {{ area.updateDate | friendlyDate }})
                         </p>
 
+                        {% if area.callSuccessRate < 65 %}
+                            {% set callSuccessRateClass = "app-danger" %}
+                        {% endif %}
+
+                        <p>
+                            <span class="{{ callSuccessRateClass }}">{% if area.callSuccessRate < 65 %}Only {% endif %}{{area.callSuccessRate }}% of calls were answered successfully</span>
+                            <br>
+                            <a href="#">Manage call issuing</a>
+                        </p>
+
                         {% set insetContent %}
                             
                             <p>
@@ -128,7 +138,7 @@
 
                         {{ govukButton ({
                             text: 'Issue a flood ' + area.type,
-                            href: 'prepare-message/severity',
+                            href: 'prepare-message/initial-router',
                             classes: 'govuk-!-margin-bottom-2'
                         }) }}
 

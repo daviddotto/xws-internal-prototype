@@ -232,6 +232,14 @@ module.exports = function (env) {
 		}
 	}
 
+	filters.midSentenceCase = (str) => {
+		if (str) {
+			return str.charAt(0).toLowerCase() + str.substr(1)
+		} else {
+			return ''
+		}
+	}
+
 	filters.default = (dataItem, fallbackString) => {
 		if (isNotThere(dataItem)) {
 			return fallbackString
@@ -477,7 +485,12 @@ module.exports = function (env) {
 		}</span>`
 	}
 
-	filters.situationTableRows = (situationArray, href, nowDate) => {
+	filters.situationTableRows = (
+		situationArray,
+		href,
+		nowDate,
+		showSuccessColumn
+	) => {
 		var rows = []
 
 		for (area of situationArray) {
@@ -491,54 +504,63 @@ module.exports = function (env) {
 					area.label.slice(0, maxAreaNameCharacters) + '&hellip;'
 			}
 
-			rows.push([
-				{
-					html:
-						'<a class="govuk-!-margin-right-2" href="' +
-						href +
-						'&area-code=' +
-						area.notation +
-						'&ta-type=' +
-						area.type +
-						'">' +
-						area.notation +
-						'</a> <br> <span class="app-table-area-name">' +
-						shortenedAreaName +
-						'</span>',
-					attributes: {
-						'data-sort-value': area.notation,
-					},
+			const areaNameCell = {
+				html:
+					'<a class="govuk-!-margin-right-2" href="' +
+					href +
+					'&area-code=' +
+					area.notation +
+					'&ta-type=' +
+					area.type +
+					'">' +
+					area.notation +
+					'</a> <br> <span class="app-table-area-name">' +
+					shortenedAreaName +
+					'</span>',
+				attributes: {
+					'data-sort-value': area.notation,
 				},
-				{
-					html: area.isSevere
-						? `<strong class="govuk-tag govuk-tag--red">severe</strong>`
-						: area.type == 'warning'
-						? `<strong class="govuk-tag govuk-tag--yellow">${area.type}</strong>`
-						: `<strong class="govuk-tag govuk-tag--blue">${area.type}</strong>`,
-					attributes: {
-						'data-sort-value': area.isSevere ? `severe` : area.type,
-					},
+			}
+
+			const typeCell = {
+				html: area.isSevere
+					? `<strong class="govuk-tag govuk-tag--red">severe</strong>`
+					: area.type == 'warning'
+					? `<strong class="govuk-tag govuk-tag--yellow">${area.type}</strong>`
+					: `<strong class="govuk-tag govuk-tag--blue">${area.type}</strong>`,
+				attributes: {
+					'data-sort-value': area.isSevere ? `severe` : area.type,
 				},
-				// {
-				// 	text: `${filters.getTime(area.issueDate)} ${filters.friendlyDate(
-				// 		area.issueDate
-				// 	)}`,
-				// 	attributes: {
-				// 		'data-sort-value': new Date(area.issueDate).getTime(),
-				// 	},
-				// },
-				{
-					html: `${filters.dueLabel(
-						area.updateDate,
-						nowDate
-					)}<br><span class="govuk-hint">(${filters.getTime(
-						area.updateDate
-					)} ${filters.friendlyDate(area.updateDate)})</span>`,
-					attributes: {
-						'data-sort-value': new Date(area.updateDate).getTime(),
-					},
+			}
+
+			const dueCell = {
+				html: `${filters.dueLabel(
+					area.updateDate,
+					nowDate
+				)}<br><span class="govuk-hint">(${filters.getTime(
+					area.updateDate
+				)} ${filters.friendlyDate(area.updateDate)})</span>`,
+				attributes: {
+					'data-sort-value': new Date(area.updateDate).getTime(),
 				},
-			])
+			}
+
+			const successCell = {
+				html:
+					area.callSuccessRate >= 65
+						? `${area.callSuccessRate}% answered`
+						: `<span class="app-danger">${area.callSuccessRate}% answered</span>`,
+				format: 'numeric',
+				attributes: {
+					'data-sort-value': area.callSuccessRate,
+				},
+			}
+
+			if (showSuccessColumn) {
+				rows.push([areaNameCell, successCell, typeCell, dueCell])
+			} else {
+				rows.push([areaNameCell, typeCell, dueCell])
+			}
 		}
 
 		return rows

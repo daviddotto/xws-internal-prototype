@@ -292,3 +292,12 @@ mark.app-preview-insertion-point {
 th[id*='region-header'] {
 	font-weight: normal;
 }
+
+.app-danger {
+	color: govuk-colour('red');
+	font-weight: bold;
+}
+
+.app-message-part-preview-placeholder {
+	color: $govuk-secondary-text-colour;
+}

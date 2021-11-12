@@ -136,6 +136,13 @@
                     }
                 },
                 {
+                    text: 'Call success',
+                    format: 'numeric',
+                    attributes: {
+                        'aria-sort': 'none'
+                    }
+                },
+                {
                     text: 'Type',
                     attributes: {
                         'aria-sort': 'none'
@@ -148,8 +155,13 @@
                     }
                 }
             ],
-            rows: situationArray | situationTableRows('/area/search?next-page=#root#/area-details&error-page=#root#/region-overview', data.currentDate)
+            rows: situationArray | situationTableRows('/area/search?next-page=#root#/area-details&error-page=#root#/region-overview', data.currentDate, true)
         }) }}
+
+        <p>
+            Call success rates under 65% are highlighted.
+        </p>
+
     </div>
 </div>
 

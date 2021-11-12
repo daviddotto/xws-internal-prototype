@@ -45,17 +45,26 @@
         <p>This message will be included in the email and will be made available on flood information websites.</p>
 
         {% set autoMessage = 'A flood ' + area.type + ' has been issued because ' %}
-        {% set autoMessage = autoMessage + data.messageParts.certainty[data['message-part--certainty']].long + ' in ' %}
-        {% set autoMessage = autoMessage + area.label + '. ' %}
-        {% set autoMessage = autoMessage + 'Areas most at risk are ' + area.description + '. \n\nYou are being asked to ' %}
-        {% set autoMessage = autoMessage + data.messageParts.response[data['message-part--response']].long + '. \n\n' %}
-        {% set autoMessage = autoMessage + data['message-part--instruction'] %}
+        {% set autoMessage = autoMessage + data['message-section--times'] | midSentenceCase + ' in ' %}
+        {% set autoMessage = autoMessage + area.label + ' ' + data['message-section--factors'] | midSentenceCase + ' ' %}
+        {% if data['message-part--has-instruction'] == 'Yes' %}
+            {% set autoMessage = autoMessage + '\n\n' + data['message-part--instruction']  %}
+        {% endif %}
+        {% if data['message-section--peak'] %}
+            {% set autoMessage = autoMessage + '\n\n' + data['message-section--peak'] %}
+        {% endif %}
+        {% set autoMessage = autoMessage + '\n\nAreas most at risk are ' + area.description + '. \n\nYou are being asked to ' %}
+        {% set autoMessage = autoMessage + data.messageParts.response[data['message-part--response']].long + '.' %}
+
+        {% if data['message-part--has-outlook'] == 'Yes' %}
+            {% set autoMessage = autoMessage + '\n\n' + data['message-part--outlook']  %}
+        {% endif %}
 
         {{ govukCharacterCount ({
             id: 'message-content',
             name: 'message-content',
             maxlength: '1500',
-            rows: 8,
+            rows: 12,
             value: data['message-content'] if data['message-content'] | length else autoMessage,
             label: {
                 text: 'Message content',
@@ -80,7 +89,7 @@
                 id: 'spoken-message',
                 name: 'spoken-message',
                 maxlength: '1500',
-                rows: 8,
+                rows: 12,
                 value: data['spoken-message'] if data['spoken-message'] else data['message-content'] ,
                 label: {
                     text: 'Spoken message content',

@@ -1,0 +1,243 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Cause peak time
+{% endblock %}
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% if area.tags | includes('coastal') or area.tags | includes('tidal') %}
+    {% set peakDescription = 'tide level' %}
+{% elseif area.tags | includes('fluvial') %}
+    {% set peakDescription = 'river level' %}
+{% else %}
+    {{ 'NEXTPAGE' | redirect | safe }}
+{% endif %}
+
+{% block content %}
+
+{% if not (area.tags | includes('coastal') or area.tags | includes('tidal') or area.tags | includes('fluvial')) %}
+    {{ 'factors' | redirect | safe }}
+{% endif %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">{{ peakDescription | sentenceCase }} peak time</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../../check">
+            {% else %}
+            <form action="factors">
+            {% endif %}
+
+                {% set peakHTML %}
+
+                    {% set autoStartDate = data.currentDate | dateAddingHours(6) %}
+                    
+                    {{ govukDateInput ({
+                        id: 'message-part--cause-peak-date',
+                        namePrefix: 'message-part--cause-peak-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Peak ' + peakDescription + ' date',
+                                isPageHeading: true,
+                                classes: 'govuk-fieldset__legend--s'
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 18 11 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: data['message-part--cause-peak-date-day'] if data['message-part--cause-peak-date-day'] else autoStartDate | getDay
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: data['message-part--cause-peak-date-month'] if data['message-part--cause-peak-date-month'] else autoStartDate | getMonth
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value: data['message-part--cause-peak-date-year'] if data['message-part--cause-peak-date-year'] else autoStartDate | getYear
+                            }
+                        ]
+                    }) }}
+
+                    {{ govukInput ({
+                        id: 'message-part--cause-peak-time',
+                        name: 'message-part--cause-peak-time',
+                        value: data['message-part--cause-peak-time'] if data['message-part--cause-peak-time'] else '12:00',
+                        classes: 'govuk-input--width-5',
+                        hint: {
+                            text: 'Use a 24-hour format. For example, 11:00.'
+                        },
+                        label: {
+                            text: 'Peak ' + peakDescription + ' time'
+                        }
+                    }) }}
+                    
+                {% endset %}
+
+                {{ govukRadios ({
+                    idPrefix: 'message-part--cause-peak',
+                    name: 'message-part--cause-peak',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle,
+                            classes: 'govuk-!-margin-bottom-4'
+                        }
+                    },
+                    hint: {
+                        text: 'This part of the message will let citizens know when the ' + peakDescription + ' will be at its highest.'
+                    },
+                    items: [
+                        {
+                            text: 'At a particular time',
+                            value: 'At a particular time',
+                            checked: true if data['message-part--cause-peak'] == 'At a particular time',
+                            conditional: {
+                                html: peakHTML
+                            }
+                        },
+                        {
+                            text: 'Do not include a peak ' + peakDescription + ' time',
+                            value: 'Not included',
+                            checked: true if data['message-part--cause-peak'] == 'Not included'
+                        }
+                    ]
+                }) }}
+
+                <div class="app-message-part-preview-container">
+
+                    <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Preview of message part</h4>
+
+                    <div class="govuk-inset-text govuk-!-margin-top-0">
+                        <div style="display: flex;">
+                            <div class="govuk-!-margin-right-2">
+                                <p class="govuk-!-margin-bottom-0">
+                                    <b>{{ peakDescription | sentenceCase }} peak: </b>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="govuk-!-margin-bottom-0">
+                                    <span class="app-message-part-preview app-message-part-preview-placeholder">Select an option...</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
+                <input class="app-message-section" type="hidden" name="message-section--peak">
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+
+        var certaintyString = '{{ data['message-part--certainty'] }}';
+
+        function numberToMonthString(input) {
+            var int = parseInt(input.replace(/[^0-9]/g,''))
+            if (int) {
+                const months = [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                ]
+                return months[int-1]
+            } else {
+                return '<enter a valid month>'
+            }
+        }
+
+        function updatePreview() {
+            var messagePreview = ''
+            var selectedOption = $('input[name="message-part--cause-peak"]:checked').val();
+            if (selectedOption == 'At a particular time') {
+                let peakDate = $('#message-part--cause-peak-date-day').val() + ' ' + numberToMonthString($('#message-part--cause-peak-date-month').val()) + ' ' + $('#message-part--cause-peak-date-year').val()
+                let peakTime = $('#message-part--cause-peak-time').val()
+                messagePreview = peakTime + ' on ' + peakDate
+            } else if (selectedOption == 'Not included') {
+                messagePreview = false
+            }
+
+            // Update preview span
+            if (messagePreview) {
+                $('.app-message-part-preview-container').show()
+                $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html(messagePreview)
+                $('.app-message-section').val('The {{ peakDescription }} will peak at ' + messagePreview + '.')
+            } else {
+                $('.app-message-part-preview-container').hide()
+                $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html('Enter details to see preview...')
+                $('.app-message-section').val('')
+            }
+        }
+
+        // Update preview on page load
+        updatePreview()
+
+        // Update preview on change of input
+        $('input').change(function() {
+            updatePreview()
+        })
+
+        $('input, textarea').on('input', function() {
+            updatePreview()
+        })
+        
+    </script>
+
+{% endblock %}
