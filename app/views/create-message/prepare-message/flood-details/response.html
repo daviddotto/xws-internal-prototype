@@ -89,6 +89,27 @@
                     ]
                 }) }}
 
+                <div class="app-message-part-preview-container">
+
+                    <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Preview of message part</h4>
+
+                    <div class="govuk-inset-text govuk-!-margin-top-0">
+                        <div style="display: flex;">
+                            <div class="govuk-!-margin-right-2">
+                                <p class="govuk-!-margin-bottom-0">
+                                    <b>What you should do: </b>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="govuk-!-margin-bottom-0">
+                                    <span class="app-message-part-preview app-message-part-preview-placeholder">Select an option...</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
                 {{ govukButton ({
                     html: 'Continue'
                 }) }}
@@ -98,5 +119,55 @@
         </div>
 
 </div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+
+        var responseOptions = {{ data.messageParts.response | debug | safe }};
+
+        function sentenceCase(str) {
+            if (str) {
+                return str.charAt(0).toUpperCase() + str.substr(1)
+            } else {
+                return ''
+            }
+        }
+
+        function updatePreview() {
+            var messagePreview = ''
+            if ($('input[name="message-part--response"]:checked').val()) {
+                messagePreview = sentenceCase(responseOptions[$('input[name="message-part--response"]:checked').val()].long)
+            } else {
+                messagePreview = false
+            }
+
+            // Update preview span
+            if (messagePreview) {
+                $('.app-message-part-preview-container').show()
+                $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html(messagePreview)
+            } else {
+                $('.app-message-part-preview-container').hide()
+                $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html('Enter details to see preview...')
+            }
+        }
+
+        // Update preview on page load
+        updatePreview()
+
+        // Update preview on change of input
+        $('input').change(function() {
+            updatePreview()
+        })
+
+        $('input, textarea').on('input', function() {
+            updatePreview()
+        })
+        
+    </script>
 
 {% endblock %}

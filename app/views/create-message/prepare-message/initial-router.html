@@ -1,1 +1,7 @@
-{{ 'flood-details/certainty' | redirect | safe }}
+{% set area = data.area %}
+
+{% if area.type == 'warning' %}
+    {{ 'flood-details/severity' | redirect | safe }}
+{% else %}
+    {{ 'flood-details/certainty' | redirect | safe }}
+{% endif %}
