@@ -1,0 +1,101 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Local instructions
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Include local instructions?</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../../check">
+            {% else %}
+            <form action="outlook">
+            {% endif %}
+
+                {% set instructionHTML %}
+                    
+                    {{ govukCharacterCount ({
+                        name: 'message-part--instruction',
+                        id: 'message-part--instruction',
+                        value: data['message-part--instruction'],
+                        maxlength: '400',
+                        label: {
+                            text: 'Local instructions'
+                        }
+                    }) }}
+                    
+                {% endset %}
+
+                {{ govukRadios ({
+                    idPrefix: 'message-part--has-instruction',
+                    name: 'message-part--has-instruction',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle
+                        }
+                    },
+                    hint: {
+                        html: 'In addition to the standard flooding instructions you can add local instructions. <br>For example, road closures or specific flood locations.'
+                    },
+                    items: [
+                        {
+                            text: 'Yes',
+                            value: 'Yes',
+                            checked: true if data['message-part--has-instruction'] == 'Yes',
+                            conditional: {
+                                html: instructionHTML
+                            }
+                        },
+                        {
+                            text: 'No',
+                            value: 'No',
+                            checked: true if data['message-part--has-instruction'] == 'No'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

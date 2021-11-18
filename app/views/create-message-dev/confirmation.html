@@ -1,0 +1,58 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Confirmation
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form method="post">
+
+
+             
+                {{ govukPanel({
+                    titleText: area.type | sentenceCase + ' sent'
+                }) }}
+
+                <p>
+                    Subscribers in {{ area.label }} are receiving this {{ area.type }}.
+                </p>
+
+                {{ govukButton ({
+                    html: 'Return to area overview',
+                    href: 'region-overview'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Local instructions
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Include an outlook message?</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../../check">
+            {% else %}
+            <form action="../headline">
+            {% endif %}
+
+                {% set instructionHTML %}
+                    
+                    {{ govukCharacterCount ({
+                        name: 'message-part--outlook',
+                        id: 'message-part--outlook',
+                        value: data['message-part--outlook'],
+                        maxlength: '400',
+                        label: {
+                            text: 'Outlook message'
+                        },
+                        hint: {
+                            text: 'For example, ‘Conditions will improve over the next 12 hours.’'
+                        }
+                    }) }}
+                    
+                {% endset %}
+
+                {{ govukRadios ({
+                    idPrefix: 'message-part--has-outlook',
+                    name: 'message-part--has-outlook',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'Yes',
+                            value: 'Yes',
+                            checked: true if data['message-part--has-outlook'] == 'Yes',
+                            conditional: {
+                                html: instructionHTML
+                            }
+                        },
+                        {
+                            text: 'No',
+                            value: 'No',
+                            checked: true if data['message-part--has-outlook'] == 'No'
+                        }
+                    ]
+                }) }}
+
+                <div class="app-message-part-preview-container">
+
+                    <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Preview of message part</h4>
+
+                    <div class="govuk-inset-text govuk-!-margin-top-0">
+                        <div style="display: flex;">
+                            <div class="govuk-!-margin-right-2">
+                                <p class="govuk-!-margin-bottom-0">
+                                    <b>Outlook: </b>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="govuk-!-margin-bottom-0">
+                                    <span class="app-message-part-preview app-message-part-preview-placeholder">Select an option...</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+
+        function updatePreview() {
+            var messagePreview = ''
+            if ($('input[name="message-part--has-outlook"]').val() == 'Yes') {
+                messagePreview = $('textarea[name="message-part--outlook"]').val()
+            } else {
+                messagePreview = false
+            }
+
+            // Update preview span
+            if (messagePreview) {
+                $('.app-message-part-preview-container').show()
+                $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html(messagePreview)
+            } else {
+                $('.app-message-part-preview-container').hide()
+                $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html('Enter details to see preview...')
+            }
+        }
+
+        // Update preview on page load
+        updatePreview()
+
+        // Update preview on change of input
+        $('input').change(function() {
+            updatePreview()
+        })
+
+        $('input, textarea').on('input', function() {
+            updatePreview()
+        })
+        
+    </script>
+
+{% endblock %}

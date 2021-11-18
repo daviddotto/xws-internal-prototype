@@ -1,0 +1,62 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Message for professional partners
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-two-thirds">
+
+        <form action="check">
+
+            <h1 class="govuk-heading-xl">Message for professional partners</h1>
+
+            <p>This message will be included in the emails to professional partners and will be made available on flood information systems accessible by professional partners.</p>
+
+            {{ govukCharacterCount ({
+                id: 'pp-message-content',
+                name: 'pp-message-content',
+                maxlength: '500',
+                rows: 4,
+                value: data['pp-message-content'],
+                label: {
+                    text: 'Message for professional partners',
+                    classes: 'govuk-visually-hidden'
+                }
+            }) }}
+
+            {{ govukButton ({
+                html: 'Continue'
+            }) }}
+
+        </form>
+
+    </div>
+
+</div>
+{% endblock %}

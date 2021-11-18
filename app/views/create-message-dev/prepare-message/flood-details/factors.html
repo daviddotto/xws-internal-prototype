@@ -1,0 +1,230 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Flooding causes
+{% endblock %}
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">What factors are causing flooding?</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../../check">
+            {% else %}
+            <form action="response">
+            {% endif %}
+
+                {% set customHTML %}
+
+                    {{ govukCharacterCount ({
+                        name: 'message-part--factor-custom',
+                        id: 'message-part--factor-custom',
+                        maxlength: '200',
+                        label: {
+                            text: 'Other flood factor(s)'
+                        },
+                        hint: {
+                            text: 'For example, ‘some storm drains in the area are blocked’'
+                        },
+                        rows: 2
+                    }) }}
+                    
+                {% endset %}
+
+                {{ govukCheckboxes ({
+                    idPrefix: 'message-part--factors',
+                    name: 'message-part--factors',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle,
+                            classes: 'govuk-!-margin-bottom-4'
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'High rainfall',
+                            value: 'there has been high rainfall',
+                            checked: true if data['message-part--factors'] | includes('there has been high rainfall')
+                        },
+                        {
+                            text: 'High winds',
+                            value: 'high winds',
+                            checked: true if data['message-part--factors'] | includes('high winds')
+                        } if (area.tags | includes('coastal')),
+                        {
+                            text: 'Higher tide level than usual',
+                            value: 'the tide level is higher than usual',
+                            checked: true if data['message-part--factors'] | includes('the tide level is higher than usual')
+                        } if (area.tags | includes('coastal') or area.tags | includes('tidal')),
+                        {
+                            text: 'Wave overtopping',
+                            value: 'waves are overtopping coastal defences',
+                            checked: true if data['message-part--factors'] | includes('waves are overtopping coastal defences')
+                        } if (area.tags | includes('coastal')),
+                        {
+                            text: 'Meltwater from lying snow',
+                            value: 'there is meltwater from lying snow',
+                            checked: true if data['message-part--factors'] | includes('there is meltwater from lying snow')
+                        },
+                        {
+                            text: 'Other factor(s)',
+                            value: '*other*',
+                            checked: true if data['message-part--factors'] | includes('*other*'),
+                            conditional: {
+                                html: customHTML
+                            }
+                        }
+                    ]
+                }) }}
+
+                <div class="app-message-part-preview-container">
+
+                    <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Preview of message part</h4>
+
+                    <div class="govuk-inset-text govuk-!-margin-top-0">
+                        <div style="display: flex;">
+                            <div class="govuk-!-margin-right-2">
+                                <p class="govuk-!-margin-bottom-0">
+                                    <b>Flooding reason: </b>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="govuk-!-margin-bottom-0">
+                                    <span class="app-message-part-preview app-message-part-preview-placeholder">Select an option...</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
+                <input class="app-message-section" type="hidden" name="message-section--factors">
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+
+        var certaintyString = '{{ data['message-part--certainty'] }}';
+
+        function numberToMonthString(input) {
+            var int = parseInt(input.replace(/[^0-9]/g,''))
+            if (int) {
+                const months = [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                ]
+                return months[int-1]
+            } else {
+                return '<enter a valid month>'
+            }
+        }
+
+        function updatePreview() {
+            var messagePreview = ''
+            var reasonArray = []
+            $('input:checkbox[name="message-part--factors"]:checked').each(function(){
+                reasonArray.push($(this).val());
+            });
+            if (reasonArray.length > 0) {
+                if (reasonArray.length == 1) {
+                    var processedMessage = reasonArray[0] == '*other*' ? ($('#message-part--factor-custom').val() ?? '<enter factor(s)>') : reasonArray[0]
+                    messagePreview = 'Because ' + processedMessage
+                } else {
+                    messagePreview = 'Because'
+                    for (var i = 0; i < reasonArray.length; i++) {
+                        var processedMessage = reasonArray[i] == '*other*' ? ($('#message-part--factor-custom').val() ?? '<enter factor(s)>') : reasonArray[i]
+                        if (i == 0) {
+                            messagePreview = messagePreview + ' ' + processedMessage
+                        } else if (i == reasonArray.length - 1) {
+                            messagePreview = messagePreview + ' and ' + processedMessage
+                        } else {
+                            messagePreview = messagePreview + ', ' + processedMessage
+                        }
+                    }
+                }
+            } else {
+                messagePreview = false
+            }
+
+            // Update preview span
+            if (messagePreview) {
+                $('.app-message-part-preview-container').show()
+                $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html(messagePreview + '.')
+                $('.app-message-section').val(messagePreview + '.')
+            } else {
+                $('.app-message-part-preview-container').hide()
+                $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html('Enter details to see preview...')
+                $('.app-message-section').val('')
+            }
+        }
+
+        // Update preview on page load
+        updatePreview()
+
+        // Update preview on change of input
+        $('input').change(function() {
+            updatePreview()
+        })
+
+        $('input, textarea').on('input', function() {
+            updatePreview()
+        })
+        
+    </script>
+
+{% endblock %}

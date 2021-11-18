@@ -1,0 +1,123 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Check the {{ area.type }}
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+{% endblock %}
+
+{% block content %}
+
+{% set emailPreviewHTML %}
+
+    <p>
+        {{ data['message-content'] }}
+    </p>
+
+{% endset %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form action="confirmation">
+
+                <h1 class="govuk-heading-xl">Check the {{ area.type }}</h1>
+
+                {% set spokenMessageHTML %}
+                    <p><b>Preview</b></p>
+                    <audio id="preview-player" controls>
+                        <source type="audio/mpeg">
+                    </audio>
+                    <p>(Date and time of issuing not final)</p>
+                {% endset %}
+
+                {% set urgentSpokenMessageHTML %}
+                    <p><b>Preview</b></p>
+                    <audio id="urgent-preview-player" controls>
+                        <source type="audio/mpeg">
+                    </audio>
+                {% endset %}
+
+                {{ govukSummaryList ({
+                    classes: 'app-summary-list-vertical',
+                    rows: [
+                        {
+                            key: {
+                                text: 'Warning severity'
+                            },
+                            value: {
+                                text: data['severity']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'severity?fromCheck=true',
+                                        visuallyHiddenText: 'the severity of this message'
+                                    }
+                                ]
+                            }
+                        } if area.type == 'warning',
+                        {
+                            key: {
+                                text: 'Message headline'
+                            },
+                            value: {
+                                html: data['message-part--headline']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change headline',
+                                        href: 'spoken-message?fromCheck=true'
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Message content'
+                            },
+                            value: {
+                                html: emailPreviewHTML
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change message',
+                                        href: 'spoken-message?fromCheck=true',
+                                        visuallyHiddenText: 'message content'
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Send ' + area.type
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

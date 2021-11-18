@@ -1,0 +1,296 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    {{ area.label }} - {{ area.type }} area
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    <link
+    href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css"
+    rel="stylesheet"
+    />
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% if area.issueDate %}
+                <p>
+                    {% set inForceType = 'Severe warning' if area.isSevere else area.type %}
+                    <span class="app-in-force-label">{{ inForceType | sentenceCase }} in force</span>
+                </p>
+            {% endif %}
+
+            <h1 class="govuk-heading-xl">{{ area.label }} flood {{ area.type }} area</h1>
+
+        </div>
+
+</div>
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+                {% set detailsContentHTML %}
+                    
+                    <figure>
+                        <div id="map"></div>
+                        <figcaption>
+                            {{ 'Map of the flood ' + area.type + ' area' }}
+                        </figcaption>
+                    </figure>
+
+                {% endset %}
+                
+                {{ govukDetails({
+                    summaryText: 'View a map of the flood ' + area.type + ' area',
+                    html: detailsContentHTML
+                }) }}
+
+                {% if area.issueDate %}
+
+                    <div class="app-notification-list">
+
+                        <h2 class="govuk-heading-l">
+                            {{ area.type | sentenceCase }} issued at {{ area.issueDate | getTime }} on {{ area.issueDate | friendlyDate }}
+                        </h2>
+
+                        <p>
+                            {{ area.updateDate | dueLabelStandalone(data.currentDate) | safe }} <br>
+                            ({{ area.updateDate | getTime }} on {{ area.updateDate | friendlyDate }})
+                        </p>
+
+                        {% if area.callSuccessRate < 65 %}
+                            {% set callSuccessRateClass = "app-danger" %}
+                        {% endif %}
+
+                        <p>
+                            <span class="{{ callSuccessRateClass }}">{% if area.callSuccessRate < 65 %}Only {% endif %}{{area.callSuccessRate }}% of calls were answered successfully</span>
+                            <br>
+                            <a href="#">Manage call issuing</a>
+                        </p>
+
+                        {% set insetContent %}
+                            
+                            <p>
+                                This message has been issued because there is a possibility of some flooding of homes and businesses between 18:32 and 19:47 today, {{ area.issueDate | friendlyDate }}. Water levels are expected to be higher than usual, due to the forecast weather conditions as a surge coincides with the high water. Areas most at risk are {{ area.description }}. For more info refer to local tide tables). Take care on coastal roads and footpaths, and don't put yourself in unnecessary danger. We are closely monitoring the situation and not expecting the situation to escalate, or to issue anything else for the following water level rises.
+                            </p>
+                            
+                        {% endset %}
+
+                        {{ govukInsetText ({
+                            html: insetContent
+                        }) }}
+
+                        <ul class="govuk-list govuk-!-margin-top-2">
+                            <li><a href="#">View this {{ area.type }} on GOV.UK (opens in a new tab)</a></li>
+                            <li><a href="#">View this {{ area.type }} on FWIS (opens in a new tab)</a></li>
+                        </ul>
+
+                        {{ govukButton ({
+                            text: 'Update ' + area.type,
+                            href: '#',
+                            classes: 'govuk-!-margin-bottom-2'
+                        }) }}
+                        <br>
+                        {{ govukButton ({
+                            text: 'Remove ' + area.type,
+                            href: '#',
+                            classes: 'govuk-button--warning govuk-!-margin-bottom-2'
+                        }) }}
+
+                        <ul class="govuk-list govuk-!-margin-top-2">
+                            <li><a href="#">View past flood warnings for this target area</a></li>
+                        </ul>
+                    
+                    </div>
+
+                {% else %}
+
+                    <div class="app-notification-list">
+
+                        {{ govukInsetText ({
+                            text: 'No flood ' + area.type + ' in force'
+                        }) }}
+
+                        {{ govukButton ({
+                            text: 'Issue a flood ' + area.type,
+                            href: 'severity',
+                            classes: 'govuk-!-margin-bottom-2'
+                        }) }}
+
+                        <ul class="govuk-list govuk-!-margin-top-2">
+                            {% if data['send-option'] == 'Draft' %}
+                                <li>
+                                    <a href="#">1 draft warning saved</a>
+                                </li>
+                            {% endif %}
+                            <li><a href="#">View past flood alerts for this target area</a></li>
+                        </ul>
+                    
+                    </div>
+
+                {% endif %}
+            
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+                <h2 class="govuk-heading-m">Target area information</h2>
+
+                {% set tagsHTML %}
+
+                    {% for tag in area.tags %}
+
+                        {{ govukTag({
+                            text: tag,
+                            classes: 'govuk-tag--' + tag | colorForTag
+                        }) }}
+
+                    {% endfor %}
+
+                {% endset %}
+
+                {{ govukSummaryList ({
+                    classes: 'app-summary-list-vertical',
+                    rows: [
+                        {
+                            key: {
+                                text: 'Code'
+                            },
+                            value: {
+                                text: area.notation
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Name'
+                            },
+                            value: {
+                                text: area.label
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Target area type'
+                            },
+                            value: {
+                                html: '<strong class="govuk-tag govuk-tag--red">severe</strong>' if area.isSevere else ('<strong class="govuk-tag govuk-tag--yellow">' + area.type + '</strong>' if area.type == 'warning' else '<strong class="govuk-tag govuk-tag--blue">' + area.type + '</strong>') | safe
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Flooding type' if area.tags.length == 1 else 'Flooding types'
+                            },
+                            value: {
+                                text: tagsHTML | safe
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Description'
+                            },
+                            value: {
+                                text: area.description
+                            }
+                        }
+                    }
+                }) }}
+
+        </div>
+
+</div>
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-full">
+
+            <hr class="govuk-section-break govuk-section-break--xl">
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
+    
+    <script>
+ 
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRkb3R0byIsImEiOiJjaW54cDQ5ejUwMHFsdnhtMjh1M2NwYWIwIn0.hUo15CVfYcWgHWkRIQomiQ';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/daviddotto/ckv9jrhtzalsn14o8dy7ux3x1',
+        center: {lon: {{ area.long }}, lat: {{ area.lat }}},
+        zoom: {{ '12' if (area.type == 'warning') else '9' }},
+        attributionControl: false
+    });
+    map.on('load', function () {
+        map.resize();
+        map.addControl(new mapboxgl.NavigationControl({
+            showCompass: false
+        }), 'top-left');
+        map.addControl(new mapboxgl.FullscreenControl(), 'top-right'); 
+        map.addSource('{{ area.notation }}', {
+            type: 'geojson',
+            data: '{{ area.polygon | secure }}'
+        });
+        map.addLayer({
+            'id': '{{ area.notation }}-warning-fill',
+            'type': 'fill',
+            'source': '{{ area.notation }}',
+            'layout': {},
+            'paint': {
+                'fill-color': '{{ '#d4351c' if (area.type == 'warning') else '#f47738' }}', 
+                'fill-opacity': 0.2
+            }
+        });
+        map.addLayer({
+            'id': '{{ area.notation }}-warning-outline',
+            'type': 'line',
+            'source': '{{ area.notation }}',
+            'layout': {},
+            'paint': {
+                'line-color': '{{ '#d4351c' if (area.type == 'warning') else '#f47738' }}',
+                'line-width': 2
+            }
+        });
+    });
+
+    var details = document.querySelector('details')
+
+    details.addEventListener("toggle", event => {
+        map.resize()
+        map.flyTo({
+            center: {lon: {{ area.long }}, lat: {{ area.lat }}}
+        })
+    });
+
+  </script>
+    
+{% endblock %}

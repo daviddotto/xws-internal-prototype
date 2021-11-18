@@ -1,0 +1,168 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set region = data.regions[data['selected-region']] %}
+
+{% block pageTitle %}
+    {{ region.name }} area overview
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ regionBanner({
+        region: region,
+        nationalURL: 'national-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+{% endblock %}
+
+{% block content %}
+
+{% if not region %}
+    
+    {{ 'national-overview' | redirect | safe }}
+    
+{% endif %}
+
+<div class='govuk-grid-row'>
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">{{ region.name }} area overview</h1>
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <div class="govuk-grid-column-one-third">
+
+                <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                    <div class="app-statistic-header-icon">
+                        <img src="/public/images/flood-warning-icons/alert.gif" alt="Flood alert icon">
+                    </div>
+                    
+                    <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                        {{ region.alertsInForce }}
+                    </span>
+
+                </div>
+
+                <span class="app-statistic-content govuk-heading-s">
+                    Flood alerts <span class="app-no-wrap">in-force</span>
+                </span>
+
+            </div>
+
+            <div class="govuk-grid-column-one-third">
+
+                <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                    <div class="app-statistic-header-icon">
+                        <img src="/public/images/flood-warning-icons/warning.gif" alt="Flood warning icon">
+                    </div>
+                    
+                    <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                        {{ region.warningsInForce }}
+                    </span>
+
+                </div>
+
+                <span class="app-statistic-content govuk-heading-s">
+                    Flood warnings <span class="app-no-wrap">in-force</span>
+                </span>
+
+            </div>
+
+            <div class="govuk-grid-column-one-third">
+
+                <div class="app-statistic-header-row govuk-!-margin-bottom-2">
+
+                    <div class="app-statistic-header-icon">
+                        <img src="/public/images/flood-warning-icons/severe-warning.gif" alt="Severe flood warning icon">
+                    </div>
+                    
+                    <span class="app-statistic-header-detail govuk-heading-l govuk-!-margin-bottom-0">
+                        {{ region.severeWarningsInForce }}
+                    </span>
+
+                </div>
+
+                <span class="app-statistic-content govuk-heading-s">
+                    Severe flood warnings <span class="app-no-wrap">in-force</span>
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+
+            <h2 class="govuk-heading-m">All flood target areas</h2>
+            <ul class="govuk-list">
+                <li>
+                    <a href="target-area-list?ta-type=warning">{{ region.warningAreas | length }} flood warning target areas</a>
+                </li>
+                <li>
+                    <a href="target-area-list?ta-type=alert">{{ region.alertAreas | length }} flood alert target areas</a>
+                </li>
+            </ul>
+
+        </div>
+
+</div>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        {% set situationArray = region | regionSituationArray %}
+
+        {{ govukTable({
+            caption: 'Area situation',
+            captionClasses: 'govuk-visually-hidden',
+            firstCellIsHeader: false,
+            attributes: {
+                'data-module': 'moj-sortable-table'
+            },
+            head: [
+                {
+                    text: 'Target Area',
+                    attributes: {
+                        'aria-sort': 'none'
+                    }
+                },
+                {
+                    text: 'Call success',
+                    format: 'numeric',
+                    attributes: {
+                        'aria-sort': 'none'
+                    }
+                },
+                {
+                    text: 'Type',
+                    attributes: {
+                        'aria-sort': 'none'
+                    }
+                },
+                {
+                    text: 'Update or remove due',
+                    attributes: {
+                        'aria-sort': 'ascending'
+                    }
+                }
+            ],
+            rows: situationArray | situationTableRows('/area/search?next-page=#root#/area-details&error-page=#root#/region-overview', data.currentDate, true)
+        }) }}
+
+        <p>
+            Call success rates under 65% are highlighted.
+        </p>
+
+    </div>
+</div>
+
+{% endblock %}

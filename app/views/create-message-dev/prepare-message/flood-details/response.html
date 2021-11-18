@@ -1,0 +1,173 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Response needed
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Response needed</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../../check">
+            {% else %}
+            <form action="instruction">
+            {% endif %}
+
+                {{ govukRadios ({
+                    idPrefix: 'message-part--response',
+                    name: 'message-part--response',
+                    fieldset: {
+                        legend: {
+                            html: questionTitle,
+                            classes: 'govuk-!-margin-bottom-4'
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'No action needed',
+                            value: 'None',
+                            checked: true if data['message-part--response'] == 'None'
+                        },
+                        {
+                            text: 'Monitor the situation',
+                            value: 'Monitor',
+                            checked: true if data['message-part--response'] == 'Monitor'
+                        },
+                        {
+                            text: 'Be ready to carry out flood plan',
+                            value: 'Prepare',
+                            checked: true if data['message-part--response'] == 'Prepare'
+                        },
+                        {
+                            text: 'Carry out flood plan',
+                            value: 'Execute',
+                            checked: true if data['message-part--response'] == 'Execute'
+                        },
+                        {
+                            text: 'Avoid the area',
+                            value: 'Avoid',
+                            checked: true if data['message-part--response'] == 'Avoid'
+                        },
+                        {
+                            text: 'Evacuate the area if possible',
+                            value: 'Evacuate',
+                            checked: true if data['message-part--response'] == 'Evacuate'
+                        }
+                    ]
+                }) }}
+
+                <div class="app-message-part-preview-container">
+
+                    <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Preview of message part</h4>
+
+                    <div class="govuk-inset-text govuk-!-margin-top-0">
+                        <div style="display: flex;">
+                            <div class="govuk-!-margin-right-2">
+                                <p class="govuk-!-margin-bottom-0">
+                                    <b>What you should do: </b>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="govuk-!-margin-bottom-0">
+                                    <span class="app-message-part-preview app-message-part-preview-placeholder">Select an option...</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+
+        var responseOptions = {{ data.messageParts.response | debug | safe }};
+
+        function sentenceCase(str) {
+            if (str) {
+                return str.charAt(0).toUpperCase() + str.substr(1)
+            } else {
+                return ''
+            }
+        }
+
+        function updatePreview() {
+            var messagePreview = ''
+            if ($('input[name="message-part--response"]:checked').val()) {
+                messagePreview = sentenceCase(responseOptions[$('input[name="message-part--response"]:checked').val()].long)
+            } else {
+                messagePreview = false
+            }
+
+            // Update preview span
+            if (messagePreview) {
+                $('.app-message-part-preview-container').show()
+                $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html(messagePreview)
+            } else {
+                $('.app-message-part-preview-container').hide()
+                $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html('Enter details to see preview...')
+            }
+        }
+
+        // Update preview on page load
+        updatePreview()
+
+        // Update preview on change of input
+        $('input').change(function() {
+            updatePreview()
+        })
+
+        $('input, textarea').on('input', function() {
+            updatePreview()
+        })
+        
+    </script>
+
+{% endblock %}
