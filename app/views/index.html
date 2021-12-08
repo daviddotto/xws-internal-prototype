@@ -6,40 +6,149 @@
 {% endblock %}
 
 {% block content %}
-
-  {{ '/create-message/national-overview' | redirect | safe }}
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
-        The GOV.UK Prototype Kit
-        <span class="govuk-caption-xl">{{releaseVersion}}</span>
+        Manage flood warnings prototypes
       </h1>{{releaseVersion | log }}
-      <p>
-        This kit lets you rapidly create HTML prototypes of GOV.UK services.
+
+      <p class="govuk-body-l">
+        This is not an end to end journey service prototype.
       </p>
-
       <p>
-        It contains all you need to prototype anything from simple static pages to complex, data-driven transactions.
+        This is a collection of prototypes used for testing ideas for Alpha on the service 'Manage flood warnings' which is the internal service used to create, update and remove flood warnings for users of the external 'Get flood warnings' and third-party consumers of our open data.
       </p>
+      
+      <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">
+            Design resources: user needs map, user flows, wireframes
+          </span>
+        </summary>
+        <div class="govuk-details__text">
+          <strong>Stored on Google Drive</strong><br>
+          <a href="https://docs.google.com/spreadsheets/d/1sfPn21DfLwhbn2ls1TGHKNDh8mJHkgM2/edit?usp=sharing&ouid=111895517574816288056&rtpof=true&sd=true" class="govuk-link--no-visited-state">High level user needs</a><br>
+            <a href="https://drive.google.com/drive/u/1/folders/1qWXqRuv8t1IvvbULMhpXmIXDZY9Xg2x9" class="govuk-link--no-visited-state">User flows</a><br>
+            <a href="https://drive.google.com/drive/folders/1TqrdkTeYJNOr2v8aJ6XwXc_TK1ymtVVD?usp=sharing" class="govuk-link--no-visited-state">Content wireframes</a>        </div>
+      </details>
 
-      <h2 class="govuk-heading-m">About this page</h2>
-
-      <p>We recommend you add links to your prototype to this page, rather than delete it.
-        You'll find this page in the kit at '/app/views/index.html'.</p>
-
-      <p>You can change the service name by editing the file '/app/config.js'.</p>
-
-      <h2 class="govuk-heading-m">Examples and documentation</h2>
-
-      <ul class="govuk-list govuk-list--bullet">
-        <li>
-          <a href="/docs/tutorials-and-examples">Example pages and documentation</a>
-        </li>
-        <li>
-          <a href="https://design-system.service.gov.uk">GOV.UK Design System</a>
-        </li>
-      </ul>
+      <table class="govuk-table">
+        <caption class="">Prototype versions and changes</caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Version</th>
+            <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Status</th>
+            <th scope="col" class="govuk-table__header govuk-!-width-one-half">What's changed</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">
+              <a href="/create-message/national-overview" class="govuk-link--no-visited-state">
+                Version 3
+              </a>
+            </th>
+            <td class="govuk-table__cell">
+              <strong class="govuk-tag" style="background: blue;">
+                TESTED
+              </strong>
+              <br>
+              November 2021
+            </td>
+            <td class="govuk-table__cell">
+              <p class="govuk-body">
+                Create warning message content journey:
+              </p>
+              <ul class="govuk-list govuk-list--bullet">
+                <li>Target area overview - CHANGED</li>
+                <li>Flood certainty - ADDED</li>
+                <li>Flood impact time - ADDED</li>
+                <li>Flood cause peak time - ADDED</li>
+                <li>Flood factors - ADDED</li>
+                <li>Flood factors - ADDED</li>
+                <li>Flood response - ADDED</li>
+                <li>Local response - ADDED</li>
+                <li>Outlook message - ADDED</li>
+                <li>Headline - ADDED</li>
+                <li>Message content text - CHANGED</li>
+              </ul>
+              <strong>
+                <a href="https://drive.google.com/drive/u/1/folders/1VmdeVViT7A9iEH1ZlQzERZZd-y_fUv2J" class="govuk-link--no-visited-state">
+                  View findings from user testing version 3
+                </a>
+              </strong>
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">
+              <a href="/create-message-v3/national-overview" class="govuk-link--no-visited-state">
+                Version 2
+              </a>
+            </th>
+            <td class="govuk-table__cell">
+              <strong class="govuk-tag" style="background: blue;">
+                TESTED
+              </strong>
+              <br>
+              June 2021
+            </td>
+            <td class="govuk-table__cell">
+              <p class="govuk-body">
+                Issue a warning journey:
+              </p>
+              <ul class="govuk-list govuk-list--bullet">
+                <li>National overview - ADDED</li>
+                <li>Regional overview - ADDED</li>
+                <li>Search for target area - CHANGED</li>
+                <li>Target area overview - CHANGED</li>
+                <li>Message content text - CHANGED</li>
+                <li>Spoken message content - MOVED</li>
+                <li>Urgent spoken message - MOVED</li>
+                <li>Professional partner message - ADDED</li>
+              </ul>
+              <strong>
+                <a href="https://drive.google.com/drive/u/1/folders/1IG6hn7YVOiQGFZ8TCvo8BbDQQC5b9Psa" class="govuk-link--no-visited-state">
+                  View findings from user testing version 2
+                </a>
+              </strong>
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">
+              <a href="/create-message-v1/area-code" class="govuk-link--no-visited-state">
+                Version 1
+              </a>
+            </th>
+            <td class="govuk-table__cell">
+              <strong class="govuk-tag" style="background: blue;">
+                TESTED
+              </strong>
+              <br>
+              May 2021
+            </td>
+            <td class="govuk-table__cell">
+              <p class="govuk-body">
+                Issue a warning journey:
+              </p>
+              <ul class="govuk-list govuk-list--bullet">
+                <li>Search for target area - ADDED</li>
+                <li>Target area overview - ADDED</li>
+                <li>Warning severity - ADDED</li>
+                <li>Message content text - ADDED</li>
+                <li>Spoken message content - ADDED</li>
+                <li>Urgent spoken message - ADDED</li>
+                <li>Check message - ADDED</li>
+                <li>Reminder date and time - ADDED</li>
+              </ul>
+              <strong>
+                <a href="https://drive.google.com/drive/u/1/folders/1Ce89ZzzkW4qG7Hux6MKUdZf7M4pGv91m" class="govuk-link--no-visited-state">
+                  View findings from user testing version 1
+                </a>
+              </strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
