@@ -1,0 +1,77 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Message headline
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Message headline</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../check">
+            {% else %}
+            <form action="message">
+            {% endif %}
+
+                {% set autoHeadline = 'Flood ' + area.type + ' for ' %}
+                {% set autoHeadline = autoHeadline + area.label %}
+                {% set autoHeadline = autoHeadline + ': ' + data.messageParts.response[data['message-part--response']].short | sentenceCase %}
+
+                {{ govukCharacterCount ({
+                    name: 'message-part--headline',
+                    id: 'message-part--headline',
+                    maxlength: '90',
+                    value: data['message-part--headline'] if data['message-part--headline'] | length else autoHeadline,
+                    label: {
+                        html: questionTitle
+                    },
+                    hint: {
+                        text: 'This will be used to summarise the ' + area.type + ' in text messages and emails.'
+                    },
+                    rows: '2'
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

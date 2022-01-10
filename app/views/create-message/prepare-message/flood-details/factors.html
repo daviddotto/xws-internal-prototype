@@ -31,13 +31,10 @@
 
         <div class="govuk-grid-column-two-thirds">
 
-            {% set questionTitle %}
-                <div class="govuk-!-margin-bottom-6">
-                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
-                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">What factors are causing flooding?</h1>
-                </div>
-                
-            {% endset %}
+            <div class="govuk-!-margin-bottom-6">
+                <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-6">What factors are causing flooding?</h1>
+            </div>
 
             {% if data.fromCheck %}
             <form action="../../check">
@@ -45,67 +42,17 @@
             <form action="response">
             {% endif %}
 
-                {% set customHTML %}
-
-                    {{ govukCharacterCount ({
-                        name: 'message-part--factor-custom',
-                        id: 'message-part--factor-custom',
-                        maxlength: '200',
-                        label: {
-                            text: 'Other flood factor(s)'
-                        },
-                        hint: {
-                            text: 'For example, ‘some storm drains in the area are blocked’'
-                        },
-                        rows: 2
-                    }) }}
-                    
-                {% endset %}
-
-                {{ govukCheckboxes ({
-                    idPrefix: 'message-part--factors',
+                {{ govukCharacterCount ({
                     name: 'message-part--factors',
-                    fieldset: {
-                        legend: {
-                            html: questionTitle,
-                            classes: 'govuk-!-margin-bottom-4'
-                        }
+                    id: 'message-part--factors',
+                    maxlength: '200',
+                    label: {
+                        text: 'Flooding factors'
                     },
-                    items: [
-                        {
-                            text: 'High rainfall',
-                            value: 'there has been high rainfall',
-                            checked: true if data['message-part--factors'] | includes('there has been high rainfall')
-                        },
-                        {
-                            text: 'High winds',
-                            value: 'high winds',
-                            checked: true if data['message-part--factors'] | includes('high winds')
-                        } if (area.tags | includes('coastal')),
-                        {
-                            text: 'Higher tide level than usual',
-                            value: 'the tide level is higher than usual',
-                            checked: true if data['message-part--factors'] | includes('the tide level is higher than usual')
-                        } if (area.tags | includes('coastal') or area.tags | includes('tidal')),
-                        {
-                            text: 'Wave overtopping',
-                            value: 'waves are overtopping coastal defences',
-                            checked: true if data['message-part--factors'] | includes('waves are overtopping coastal defences')
-                        } if (area.tags | includes('coastal')),
-                        {
-                            text: 'Meltwater from lying snow',
-                            value: 'there is meltwater from lying snow',
-                            checked: true if data['message-part--factors'] | includes('there is meltwater from lying snow')
-                        },
-                        {
-                            text: 'Other factor(s)',
-                            value: '*other*',
-                            checked: true if data['message-part--factors'] | includes('*other*'),
-                            conditional: {
-                                html: customHTML
-                            }
-                        }
-                    ]
+                    hint: {
+                        text: 'For example, describe the weather or circumstances that has lead to the flooding.'
+                    },
+                    rows: 4
                 }) }}
 
                 <div class="app-message-part-preview-container">
@@ -173,38 +120,13 @@
         }
 
         function updatePreview() {
-            var messagePreview = ''
-            var reasonArray = []
-            $('input:checkbox[name="message-part--factors"]:checked').each(function(){
-                reasonArray.push($(this).val());
-            });
-            if (reasonArray.length > 0) {
-                if (reasonArray.length == 1) {
-                    var processedMessage = reasonArray[0] == '*other*' ? ($('#message-part--factor-custom').val() ?? '<enter factor(s)>') : reasonArray[0]
-                    messagePreview = 'Because ' + processedMessage
-                } else {
-                    messagePreview = 'Because'
-                    for (var i = 0; i < reasonArray.length; i++) {
-                        var processedMessage = reasonArray[i] == '*other*' ? ($('#message-part--factor-custom').val() ?? '<enter factor(s)>') : reasonArray[i]
-                        if (i == 0) {
-                            messagePreview = messagePreview + ' ' + processedMessage
-                        } else if (i == reasonArray.length - 1) {
-                            messagePreview = messagePreview + ' and ' + processedMessage
-                        } else {
-                            messagePreview = messagePreview + ', ' + processedMessage
-                        }
-                    }
-                }
-            } else {
-                messagePreview = false
-            }
-
+            var messagePreview = $('#message-part--factors').val()
             // Update preview span
             if (messagePreview) {
                 $('.app-message-part-preview-container').show()
                 $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
-                $('.app-message-part-preview').html(messagePreview + '.')
-                $('.app-message-section').val(messagePreview + '.')
+                $('.app-message-part-preview').html(messagePreview)
+                $('.app-message-section').val(messagePreview)
             } else {
                 $('.app-message-part-preview-container').hide()
                 $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')

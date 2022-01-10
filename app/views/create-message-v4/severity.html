@@ -1,0 +1,77 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Warning severity
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% if data.fromCheck %}
+            <form action="check">
+            {% else %}
+            <form action="message-content/templates">
+            {% endif %}
+
+                {{ govukRadios ({
+                    idPrefix: 'severity',
+                    name: 'severity',
+                    fieldset: {
+                        legend: {
+                            text: 'Warning severity',
+                            isPageHeading: true,
+                            classes: 'govuk-fieldset__legend--xl'
+                        }
+                    },
+                    hint: {
+                            text: 'Only select ‘Severe warning’ if it has been requested by a Flood Warning Duty Officer.'
+                    },
+                    items: [
+                        {
+                            text: 'Warning',
+                            value: 'Warning',
+                            checked: true if data['severity'] != 'Severe warning'
+                        },
+                        {
+                            text: 'Severe warning',
+                            value: 'Severe warning'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}

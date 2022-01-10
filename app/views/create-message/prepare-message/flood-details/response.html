@@ -46,7 +46,7 @@
             <form action="instruction">
             {% endif %}
 
-                {{ govukRadios ({
+                {{ govukCheckboxes ({
                     idPrefix: 'message-part--response',
                     name: 'message-part--response',
                     fieldset: {
@@ -57,34 +57,29 @@
                     },
                     items: [
                         {
-                            text: 'No action needed',
-                            value: 'None',
-                            checked: true if data['message-part--response'] == 'None'
-                        },
-                        {
                             text: 'Monitor the situation',
                             value: 'Monitor',
-                            checked: true if data['message-part--response'] == 'Monitor'
+                            checked: true if data['message-part--response'] | includes('Monitor')
                         },
                         {
                             text: 'Be ready to carry out flood plan',
                             value: 'Prepare',
-                            checked: true if data['message-part--response'] == 'Prepare'
+                            checked: true if data['message-part--response'] | includes('Prepare')
                         },
                         {
                             text: 'Carry out flood plan',
                             value: 'Execute',
-                            checked: true if data['message-part--response'] == 'Execute'
+                            checked: true if data['message-part--response'] | includes('Execute')
                         },
                         {
                             text: 'Avoid the area',
                             value: 'Avoid',
-                            checked: true if data['message-part--response'] == 'Avoid'
+                            checked: true if data['message-part--response'] | includes('Avoid')
                         },
                         {
-                            text: 'Evacuate the area if possible',
+                            text: 'Evacuate',
                             value: 'Evacuate',
-                            checked: true if data['message-part--response'] == 'Evacuate'
+                            checked: true if data['message-part--response'] | includes('Evacuate')
                         }
                     ]
                 }) }}
@@ -138,11 +133,19 @@
 
         function updatePreview() {
             var messagePreview = ''
-            if ($('input[name="message-part--response"]:checked').val()) {
-                messagePreview = sentenceCase(responseOptions[$('input[name="message-part--response"]:checked').val()].long)
+            var selectedOptions = []
+            $('input[name="message-part--response"]:checked').each(function() {
+                selectedOptions.push(responseOptions[$(this).val()].long)
+            })
+
+            // Join options together with commas and an 'and'
+            if (selectedOptions.length > 1) {
+                messagePreview = selectedOptions.slice(0, -1).join(', ') + ' and ' + selectedOptions.slice(-1)
             } else {
-                messagePreview = false
+                messagePreview = selectedOptions[0]
             }
+
+            messagePreview = sentenceCase(messagePreview)
 
             // Update preview span
             if (messagePreview) {

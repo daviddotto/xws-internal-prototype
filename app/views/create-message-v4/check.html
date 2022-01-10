@@ -1,0 +1,221 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Check the {{ area.type }}
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+{% endblock %}
+
+{% block content %}
+
+{% set emailPreviewHTML %}
+
+    <p>
+        {{ data['message-content'] }}
+    </p>
+
+{% endset %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            <form action="reminder">
+
+                <h1 class="govuk-heading-xl">Check the {{ area.type }}</h1>
+
+                {% set spokenMessageHTML %}
+                    <p><b>Preview</b></p>
+                    <audio id="preview-player" controls>
+                        <source type="audio/mpeg">
+                    </audio>
+                    <p>(Date and time of issuing not final)</p>
+                {% endset %}
+
+                {% set urgentSpokenMessageHTML %}
+                    <p><b>Preview</b></p>
+                    <audio id="urgent-preview-player" controls>
+                        <source type="audio/mpeg">
+                    </audio>
+                {% endset %}
+
+                {{ govukSummaryList ({
+                    classes: 'app-summary-list-vertical',
+                    rows: [
+                        {
+                            key: {
+                                text: 'Warning severity'
+                            },
+                            value: {
+                                text: data['severity']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change',
+                                        href: 'severity?fromCheck=true',
+                                        visuallyHiddenText: 'the severity of this message'
+                                    }
+                                ]
+                            }
+                        } if area.type == 'warning',
+                        {
+                            key: {
+                                text: 'Message content'
+                            },
+                            value: {
+                                html: emailPreviewHTML
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change message',
+                                        href: 'spoken-message?fromCheck=true',
+                                        visuallyHiddenText: 'message content'
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Floodline (IVR) audio'
+                            },
+                            value: {
+                                html: spokenMessageHTML
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change message',
+                                        href: 'spoken-message?fromCheck=true',
+                                        visuallyHiddenText: 'spoken message content'
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            key: {
+                                text: 'Telephone call audio'
+                            },
+                            value: {
+                                html: urgentSpokenMessageHTML
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change message',
+                                        href: 'urgent-spoken-message?fromCheck=true',
+                                        visuallyHiddenText: 'that will be played on outbound telephone calls'
+                                    },
+                                    {
+                                        text: 'Remove',
+                                        href: 'check?add-urgent-message=No',
+                                        visuallyHiddenText: 'urgent spoken message content'
+                                    }
+                                ]
+                            }
+                        } if data['add-urgent-message'] == 'Yes',
+                        {
+                            key: {
+                                text: 'Message for professional partners'
+                            },
+                            value: {
+                                html: data['pp-message-content']
+                            },
+                            actions: {
+                                items: [
+                                    {
+                                        text: 'Change message',
+                                        href: 'pp-message?fromCheck=true',
+                                        visuallyHiddenText: 'for professional message'
+                                    },
+                                    {
+                                        text: 'Remove',
+                                        href: 'check?add-pp-message=No',
+                                        visuallyHiddenText: 'message for professional message'
+                                    }
+                                ]
+                            }
+                        } if data['add-pp-message'] == 'Yes'
+                    }
+                }) }}
+                
+                <ul class="govuk-list app-add-link-list">
+                    {% if data['add-urgent-message'] != 'Yes' %}
+                        <li>
+                            <a href="urgent-spoken-message?add-urgent-message=Yes">Add an urgent message to outbound telephone calls</a>
+                        </li>
+                    {% endif %}
+                    {% if data['add-pp-message'] != 'Yes' %}
+                        <li>
+                            <a href="pp-message?add-pp-message=Yes">Add a message for professional partners</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {{ govukRadios ({
+                    idPrefix: 'send-option',
+                    name: 'send-option',
+                    fieldset: {
+                        legend: {
+                            text: 'What would you like to do with this ' + area.type + '?',
+                            isPageHeading: false,
+                            classes: 'govuk-fieldset__legend--s'
+                        }
+                    },
+                    items: [
+                        {
+                            text: 'Issue ' + area.type + ' now',
+                            value: 'Send',
+                            checked: true if data['send-option'] == 'Send'
+                        },
+                        {
+                            text: 'Save as draft and return later',
+                            value: 'Draft',
+                            checked: true if data['send-option'] == 'Draft'
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+    
+    <script>
+    
+        $.post( '/text-to-speech/generate-ivr-message', function( url ) {
+            $( "#preview-player" ).attr( 'src', url );
+        })
+
+        $.post( '/text-to-speech/generate-urgent-message', function( url ) {
+            $( "#urgent-preview-player" ).attr( 'src', url );
+        })
+    
+    </script>
+    
+{% endblock %}

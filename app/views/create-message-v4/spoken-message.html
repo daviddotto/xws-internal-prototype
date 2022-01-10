@@ -1,0 +1,349 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Message content
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: 'region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+{% if data.fromCheck %}
+<form action="check">
+{% else %}
+<form action="check">
+{% endif %}
+
+<div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-two-thirds">
+
+        <h1 class="govuk-heading-xl">Message content</h1>
+
+        <h2>{{ area.type | sentenceCase }} message</h2>
+
+        <p>This message will be included in the email and will be made available on flood information websites.</p>
+
+        {{ govukCharacterCount ({
+            id: 'message-content',
+            name: 'message-content',
+            maxlength: '1500',
+            rows: 8,
+            value: data['message-content'],
+            label: {
+                text: 'Message content',
+                classes: 'govuk-visually-hidden'
+            }
+        }) }}
+
+    </div>
+
+</div>
+
+<div class="govuk-grid-row">
+
+    <div class="govuk-grid-column-two-thirds">
+
+            <h2>Spoken message content</h2>
+
+            <p>This message will be played on the Floodline service (IVR).</p>
+
+
+            {{ govukCharacterCount ({
+                id: 'spoken-message',
+                name: 'spoken-message',
+                maxlength: '1500',
+                rows: 8,
+                value: data['spoken-message'] if data['spoken-message'] else data['message-content'] ,
+                label: {
+                    text: 'Spoken message content',
+                    classes: 'govuk-visually-hidden'
+                }
+            }) }}
+
+            {% set pronunciationsHTML %}
+
+            <h2 class="govuk-heading-m">
+                Pronunciations
+            </h2>
+
+            <div id="pronunciation-list-container"></div>
+
+            <div class="adjustment-group">
+
+                <h3 class="govuk-heading-s">
+                    Add a new pronunciation
+                </h3>
+            
+                {{ govukInput ({
+                    id: 'adjustment-phrase',
+                    name: 'adjustment-phrase',
+                    label: {
+                        text: 'Word or phrase'
+                    }
+                }) }}
+
+                {{ govukInput ({
+                    id: 'adjustment-pronunciation',
+                    name: 'adjustment-pronunciation',
+                    label: {
+                        text: 'Pronunciation'
+                    }
+                }) }}
+
+                <div class="preview-pronunciation-container govuk-!-margin-bottom-4">
+                    
+                    <h4 class="govuk-heading-s">Pronunciation preview</h4>
+
+                    <audio id="pronunciation-preview-player" controls>
+                        <source type="audio/mpeg">
+                    </audio>
+
+                </div>
+
+                {{ govukRadios ({
+                    idPrefix: 'adjustment-save',
+                    name: 'adjustment-save',
+                    classes: 'govuk-radios--small govuk-radios--inline',
+                    fieldset: {
+                        legend: {
+                            text: 'Save this pronounciation for future messages in this target area?',
+                            isPageHeading: true,
+                            classes: 'govuk-fieldset__legend--s'
+                        }
+                    },
+                    hint: {
+                        text: 'Use this option if you are correcting the pronunciation of a common phrase like a place name. If you select ‘no’ it will apply to this ' + area.type + ' only.'
+                    },
+                    items: [
+                        {
+                            text: 'Yes',
+                            value: 'Yes'
+                        },
+                        {
+                            text: 'No',
+                            value: 'No',
+                            checked: true
+                        }
+                    ]
+                }) }}
+
+                {{ govukButton ({
+                    html: 'Add pronounciation',
+                    classes: 'govuk-button--secondary',
+                    attributes: {
+                        id: 'add-pronunciation-button'
+                    }
+                }) }}
+
+            {% endset %}
+            
+            {{ govukDetails({
+                summaryText: 'Change the pronunciation of words and phrases',
+                html: pronunciationsHTML
+            }) }}
+
+            {{ govukButton ({
+                html: 'Continue'
+            }) }}
+
+    </div>
+
+    <div class="govuk-grid-column-one-third sticky-column">
+
+        {{ govukButton ({
+            html: 'Refresh preview',
+            classes: 'govuk-button--secondary',
+            attributes: {
+                id: 'refresh-preview-button'
+            },
+            type: 'button'
+        }) }}
+
+        <div class="audio-container govuk-!-margin-bottom-4" style="display:block;">
+
+            <h2 id="preview-header" class="govuk-heading-s">Preview spoken message content</h2>
+
+            <audio id="preview-player" controls>
+                <source src="/public/audio/preview_message.mp3" type="audio/mpeg">
+            </audio>
+        
+        </div>
+        
+    </div>
+
+</div>
+
+</form>
+
+{% endblock %}
+
+{% block pageScripts %}
+    
+    <script>
+
+        var currentPreviewTextTrimmed = $('textarea#spoken-message').val().trim()
+        var previewText = currentPreviewTextTrimmed
+        var activePronunciations = []
+
+        function adaptRefreshButton() {
+            const newEntryTrimmed = $('textarea#spoken-message').val().trim()
+            if (newEntryTrimmed == currentPreviewTextTrimmed) {
+                // Preview is up-to-date
+                $('#refresh-preview-button').prop('disabled', true)
+                $('#refresh-preview-button').text('Preview is ready')
+                $('#preview-header').text('Preview spoken message content')
+                $('#refresh-preview-button').hide()
+                $('.audio-container').show()
+            } else {
+                // Preview is not up-to-date
+                $('#refresh-preview-button').prop('disabled', false)
+                $('#refresh-preview-button').text('Create preview')
+                $('#preview-header').text('Preview (needs refreshing)')
+                $('#refresh-preview-button').show()
+                $('.audio-container').hide()
+            }
+        }
+
+        function updatePronunciations() {
+            const newEntryTrimmed = $('textarea#spoken-message').val().trim()
+            $.post( '/text-to-speech/get-pronunciations', { text : newEntryTrimmed }, function( item ) {
+                previewText = item.text
+                activePronunciations = item.usedPronunciations
+                refreshPronunciationList()
+            })
+        }
+
+        function refreshPronunciationList() {
+
+            var outputHTMLString = ''
+
+            if (activePronunciations.length) {
+
+                outputHTMLString += '<dl class="govuk-summary-list">'
+
+                for (let item of activePronunciations) {
+                    outputHTMLString += '<div class="govuk-summary-list__row">'
+                        outputHTMLString += '<dt class="govuk-summary-list__key">' + item.phrase + '</dt>'
+                        outputHTMLString += '<dd class="govuk-summary-list__value">pronounced ‘' + item.pronunciation + '’</dd>'
+                        outputHTMLString += '<dd class="govuk-summary-list__actions"><a class="govuk-link" href="#" data-phrase="' + item.phrase + '">Remove<span class="govuk-visually-hidden"> pronunciation</span></a></dd>'
+                    outputHTMLString += '</div>'
+                }
+
+                outputHTMLString += '</dl>'
+
+            } else {
+
+                outputHTMLString += '<p>No pronunciations found for this message.</p>'
+
+            }
+
+            $('#pronunciation-list-container').html($(outputHTMLString))
+
+        }
+
+        function updatePreview() {
+            $('.audio-container').hide()
+            $('#refresh-preview-button').show()
+            $('#refresh-preview-button').prop('disabled', true)
+            $('#refresh-preview-button').text('Loading...')
+            currentPreviewTextTrimmed = $('textarea#spoken-message').val().trim()
+            $.post( '/text-to-speech/get-pronunciations', { text : currentPreviewTextTrimmed }, function( item ) {
+                previewText = item.text
+                activePronunciations = item.usedPronunciations
+                refreshPronunciationList()
+                $.post( '/text-to-speech/generate', { text : previewText, fileName: 'spoken_preview' }, function( url ) {
+                    $( "#preview-player" ).attr( 'src', url );
+                    adaptRefreshButton()
+                })
+            })
+        }
+
+        var typingTimer
+        var doneTypingInterval = 200
+        var $pronunciationInput = $('input#adjustment-pronunciation')
+
+        $pronunciationInput.on('keyup', function () {
+        clearTimeout(typingTimer)
+            typingTimer = setTimeout(doneTypingPronunciation, doneTypingInterval);
+        })
+
+        $pronunciationInput.on('keydown', function () {
+            clearTimeout(typingTimer)
+        })
+
+        function doneTypingPronunciation () {
+            $.post( '/text-to-speech/generate', { text : $pronunciationInput.val(), fileName: 'pronunciation_preview' }, function( url ) {
+                $( "#pronunciation-preview-player" ).attr( 'src', url );
+                adaptRefreshButton()
+            })
+        }
+
+        function saveInput() {
+            $.post( '/text-to-speech/save-input', { 
+                text : $('textarea#spoken-message').val().trim(), 
+                name: 'spoken-message'
+            })
+        }
+
+        $('#pronunciation-list-container').on('click', 'a', function(e) {
+            e.preventDefault()
+            const phraseToRemove = $(this).attr('data-phrase').trim()
+            $.post( '/text-to-speech/remove-pronunciation', { text : phraseToRemove }, function( done ) {
+                setTimeout(updatePreview(), 500)
+            })
+        })
+
+        $('#add-pronunciation-button').on('click', function(e) {
+            e.preventDefault()
+            const inputPhrase = $('#adjustment-phrase').val().trim()
+            const inputPronunciation = $('#adjustment-pronunciation').val().trim()
+            if (inputPhrase.length > 1 && inputPronunciation.length > 1) {
+                $.post( '/text-to-speech/add-pronunciation', { phrase : inputPhrase, pronunciation: inputPronunciation }, function( done ) {
+                    setTimeout(updatePreview(), 500)
+                    $('#adjustment-phrase').val('')
+                    $('#adjustment-pronunciation').val('')
+                    $('input[name="adjustment-save"]').prop('checked', false)
+                }) 
+            }
+        })
+
+        $('textarea#spoken-message').on('input', function() {
+            updatePronunciations()
+            adaptRefreshButton()
+            saveInput()
+        })
+
+        $('#refresh-preview-button').on('click', function(e) {
+            e.preventDefault()
+            updatePreview()
+        })
+
+        adaptRefreshButton()
+        updatePronunciations()
+        updatePreview()
+        
+    
+    </script>
+    
+{% endblock %}

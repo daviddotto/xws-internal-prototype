@@ -1,0 +1,301 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% block pageTitle %}
+    Impact times
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-two-thirds">
+
+            {% set questionTitle %}
+                <div class="govuk-!-margin-bottom-6">
+                    <span class="govuk-caption-l">Prepare {{ area.type }} message</span>
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">When is flooding expected to impact this area?</h1>
+                </div>
+                
+            {% endset %}
+
+            {% if data.fromCheck %}
+            <form action="../../check">
+            {% else %}
+            <form action="cause-peak">
+            {% endif %}
+
+                {{ questionTitle | safe }}
+
+                {% set autoStartDate = data.currentDate | dateAddingHours(4) %}
+                {% set autoStartDateValue = autoStartDate | getDay + '/' + autoStartDate | getMonth + '/' + autoStartDate | getYear %}
+                {% set autoEndDate = data.currentDate | dateAddingHours(8) %}
+
+                {{ govukInput ({
+                    id: 'message-part--impact-start-date',
+                    name: 'message-part--impact-start-date',
+                    value: data['message-part--impact-start-date'] if data['message-part--impact-start-date'] else '',
+                    classes: 'govuk-input--width-10',
+                    value: autoStartDateValue,
+                    label: {
+                        text: 'Flooding impact starts'
+                    },
+                    hint: {
+                        text: 'For example, 02/09/2021'
+                    }
+                }) }}
+                
+                {{ govukDateInput ({
+                    id: 'message-part--impact-start-date',
+                    namePrefix: 'message-part--impact-start-date',
+                    fieldset: {
+                        legend: {
+                            text: 'Flooding impact starts',
+                            isPageHeading: true,
+                            classes: 'govuk-fieldset__legend--s'
+                        }
+                    },
+                    hint: {
+                        text: 'For example, 18 11 2021'
+                    },
+                    items: [
+                        {
+                            classes: 'govuk-input--width-2',
+                            name: 'day',
+                            value: data['message-part--impact-start-date-day'] if data['message-part--impact-start-date-day'] else autoStartDate | getDay
+                        },
+                        {
+                            classes: 'govuk-input--width-2',
+                            name: 'month',
+                            value: data['message-part--impact-start-date-month'] if data['message-part--impact-start-date-month'] else autoStartDate | getMonth
+                        },
+                        {
+                            classes: 'govuk-input--width-4',
+                            name: 'year',
+                            value: data['message-part--impact-start-date-year'] if data['message-part--impact-start-date-year'] else autoStartDate | getYear
+                        }
+                    ]
+                }) }}
+
+                {{ govukInput ({
+                    id: 'message-part--impact-start-time',
+                    name: 'message-part--impact-start-time',
+                    value: data['message-part--impact-start-time'] if data['message-part--impact-start-time'] else '12:00',
+                    classes: 'govuk-input--width-5',
+                    hint: {
+                        text: 'Use a 24-hour format. For example, 11:00.'
+                    },
+                    label: {
+                        text: 'Start time'
+                    }
+                }) }}
+
+                {{ govukDateInput ({
+                    id: 'message-part--impact-end-date',
+                    namePrefix: 'message-part--impact-end-date',
+                    fieldset: {
+                        legend: {
+                            text: 'Flooding impact ends',
+                            isPageHeading: true,
+                            classes: 'govuk-fieldset__legend--s'
+                        }
+                    },
+                    hint: {
+                        text: 'For example, 18 11 2021'
+                    },
+                    items: [
+                        {
+                            classes: 'govuk-input--width-2',
+                            name: 'day',
+                            value: data['message-part--impact-end-date-day'] if data['message-part--impact-end-date-day'] else autoEndDate | getDay
+                        },
+                        {
+                            classes: 'govuk-input--width-2',
+                            name: 'month',
+                            value: data['message-part--impact-end-date-month'] if data['message-part--impact-end-date-month'] else autoEndDate | getMonth
+                        },
+                        {
+                            classes: 'govuk-input--width-4',
+                            name: 'year',
+                            value: data['message-part--impact-end-date-year'] if data['message-part--impact-end-date-year'] else autoEndDate | getYear
+                        }
+                    ]
+                }) }}
+
+                {{ govukInput ({
+                    id: 'message-part--impact-end-time',
+                    name: 'message-part--impact-end-time',
+                    value: data['message-part--impact-end-time'] if data['message-part--impact-end-time'] else '12:00',
+                    classes: 'govuk-input--width-5',
+                    hint: {
+                        text: 'Use a 24-hour format. For example, 18:00.'
+                    },
+                    label: {
+                        text: 'End time'
+                    }
+                }) }}
+
+                <div class="app-message-part-preview-container">
+
+                    <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Preview of message part</h4>
+
+                    <div class="govuk-inset-text govuk-!-margin-top-0">
+                        <div style="display: flex;">
+                            <div class="govuk-!-margin-right-2">
+                                <p class="govuk-!-margin-bottom-0">
+                                    <b>When: </b>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="govuk-!-margin-bottom-0">
+                                    <span class="app-message-part-preview app-message-part-preview-placeholder">Select an option...</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <input class="app-message-section" type="hidden" name="message-section--times">
+
+                {{ govukButton ({
+                    html: 'Continue'
+                }) }}
+
+            </form>
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    <script>
+
+        var certaintyString = '{{ data['message-part--certainty'] }}';
+
+        function numberToMonthString(input) {
+            var int = parseInt(input.replace(/[^0-9]/g,''))
+            if (int) {
+                const months = [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                ]
+                return months[int-1]
+            } else {
+                return '<enter a valid month>'
+            }
+        }
+
+        function updatePreview() {
+            var messagePreview = ''
+            $('.app-message-part-preview-container').show()
+            var selectedOption = $('input[name="message-part--impact-times"]:checked').val();
+            if (selectedOption == 'Between start time and end time') {
+                let startDate = $('#message-part--impact-start-date-day').val() + ' ' + numberToMonthString($('#message-part--impact-start-date-month').val()) + ' ' + $('#message-part--impact-start-date-year').val()
+                let startTime = $('#message-part--impact-start-time').val()
+                let endDate = $('#message-part--impact-end-date-day').val() + ' ' + numberToMonthString($('#message-part--impact-end-date-month').val()) + ' ' + $('#message-part--impact-end-date-year').val()
+                let endTime = $('#message-part--impact-end-time').val()
+               if (certaintyString == 'Possible') {
+                    // Flooding is possible
+                    if (startDate == endDate) {
+                        messagePreview = 'Flooding is possible between ' + startTime + ' and ' + endTime + ' on ' + startDate
+                    } else {
+                        messagePreview = 'Flooding is possible between ' + startTime + ' on ' + startDate + ' and ' + endTime + ' on ' + endDate
+                    }
+                } else if (certaintyString == 'Likely') {
+                    // Flooding is likely
+                    if (startDate == endDate) {
+                        messagePreview = 'Flooding is likely between ' + startTime + ' and ' + endTime + ' on ' + startDate
+                    } else {
+                        messagePreview = 'Flooding is likely between ' + startTime + ' on ' + startDate + ' and ' + endTime + ' on ' + endDate
+                    }
+                } else {
+                    // Flooding has started
+                    if (startDate == endDate) {
+                        messagePreview = 'Flooding started at ' + startTime + ' and is forecast until ' + endTime + ' on ' + startDate
+                    } else {
+                        messagePreview = 'Flooding started at ' + startTime + ' on ' + startDate + ' and is forecast until ' + endTime + ' on ' + endDate
+                    }
+                }
+            } else if (selectedOption == 'Start time only') {
+                let startDate = $('#message-part--impact-date-day').val() + ' ' + numberToMonthString($('#message-part--impact-date-month').val()) + ' ' + $('#message-part--impact-date-year').val()
+                let startTime = $('#message-part--impact-time').val()
+               if (certaintyString == 'Possible') {
+                    // Flooding is possible
+                    messagePreview = 'Flooding is possible at ' + startTime + ' on ' + startDate
+                } else if (certaintyString == 'Likely') {
+                    // Flooding is likely
+                    messagePreview = 'Flooding is likely at ' + startTime + ' on ' + startDate
+                } else {
+                    // Flooding has started
+                    messagePreview = 'Flooding started at ' + startTime + ' on ' + startDate
+                }
+            } else if (selectedOption == 'Custom message') {
+                messagePreview = $('#message-part--impact-time-custom').val()
+            } else if (selectedOption == 'Do not include impact times') {
+                messagePreview = false
+            }
+
+            // Update preview
+            if (messagePreview) {
+                $('.app-message-part-preview-container').show()
+                $('.app-message-part-preview').removeClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html(messagePreview)
+                $('.app-message-section').val(messagePreview)
+            } else {
+                $('.app-message-part-preview').addClass('app-message-part-preview-placeholder')
+                $('.app-message-part-preview').html('Enter details to see preview...')
+                $('.app-message-section').val('')
+                $('.app-message-part-preview-container').hide()
+            }
+        }
+
+        // Update preview on page load
+        updatePreview()
+
+        // Update preview on change of input
+        $('input').change(function() {
+            updatePreview()
+        })
+
+        $('input, textarea').on('input', function() {
+            updatePreview()
+        })
+        
+    </script>
+
+{% endblock %}

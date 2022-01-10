@@ -194,6 +194,93 @@
                     
                 {% endset %}
 
+                {% set dayPartHTML %}
+
+                    {# Day part date #}
+
+                    {{ govukDateInput ({
+                        id: 'message-part--day-part-date',
+                        namePrefix: 'message-part--day-part-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Flooding impact date',
+                                isPageHeading: true,
+                                classes: 'govuk-fieldset__legend--s'
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 18 11 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: data['message-part--day-part-date-day'] if data['message-part--day-part-date-day'] else autoStartDate | getDay
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: data['message-part--day-part-date-month'] if data['message-part--day-part-date-month'] else autoStartDate | getMonth
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value: data['message-part--day-part-date-year'] if data['message-part--day-part-date-year'] else autoStartDate | getYear
+                            }
+                        ]
+                    }) }}
+
+                    {{ govukRadios ({
+                        idPrefix: 'message-part--impact-day-part',
+                        name: 'message-part--impact-day-part',
+                        fieldset: {
+                            legend: {
+                                text: 'Select a part of the day',
+                                isPageHeading: true,
+                                classes: 'govuk-fieldset__legend--s'
+                            }
+                        },
+                        items: [
+                            {
+                                text: 'Early hours of the morning',
+                                value: 'early-morning',
+                                checked: true if data['message-part--impact-day-part'] == 'early-morning'
+                            },
+                            {
+                                text: 'Morning',
+                                value: 'morning',
+                                checked: true if data['message-part--impact-day-part'] == 'morning'
+                            },
+                            {
+                                text: 'Around midday',
+                                value: 'midday',
+                                checked: true if data['message-part--impact-day-part'] == 'midday'
+                            },
+                            {
+                                text: 'Afternoon',
+                                value: 'afternoon',
+                                checked: true if data['message-part--impact-day-part'] == 'afternoon'
+                            },
+                            {
+                                text: 'Evening',
+                                value: 'evening',
+                                checked: true if data['message-part--impact-day-part'] == 'evening'
+                            },
+                            {
+                                text: 'Night',
+                                value: 'night',
+                                checked: true if data['message-part--impact-day-part'] == 'night'
+                            },
+                            {
+                                text: 'Around midnight',
+                                value: 'midnight',
+                                checked: true if data['message-part--impact-day-part'] == 'midnight'
+                            }
+                        ]
+                    }) }}
+
+                {% endset %}
+
                 {% set customHTML %}
                     
                     {{ govukCharacterCount ({
@@ -222,19 +309,27 @@
                     },
                     items: [
                         {
-                            text: 'Between start time and end time',
-                            value: 'Between start time and end time',
-                            checked: true if data['message-part--impact-times'] == 'Between start time and end time',
+                            text: 'Between one time and another',
+                            value: 'Between one time and another',
+                            checked: true if data['message-part--impact-times'] == 'Between one time and another',
                             conditional: {
                                 html: timesHTML
                             }
                         },
                         {
-                            text: 'Start time only',
-                            value: 'Start time only',
-                            checked: true if data['message-part--impact-times'] == 'Start time only',
+                            text: 'A specific time',
+                            value: 'A specific time',
+                            checked: true if data['message-part--impact-times'] == 'A specific time',
                             conditional: {
                                 html: startHTML
+                            }
+                        },
+                        {
+                            text: 'Part of the day',
+                            value: 'Part of the day',
+                            checked: true if data['message-part--impact-times'] == 'Part of the day',
+                            conditional: {
+                                html: dayPartHTML
                             }
                         },
                         {
@@ -244,11 +339,6 @@
                             conditional: {
                                 html: customHTML
                             }
-                        },
-                        {
-                            text: 'Do not include impact times',
-                            value: 'Do not include impact times',
-                            checked: true if data['message-part--impact-times'] == 'Do not include impact times'
                         }
                     ]
                 }) }}
@@ -317,11 +407,21 @@
             }
         }
 
+        var dayPartStrings = {
+            'early-morning': 'in the early hours of ',
+            'morning': 'on the morning of ',
+            'midday': 'around midday ',
+            'afternoon': 'on the afternoon of ',
+            'evening': 'on the evening of ',
+            'night': 'on the night of ',
+            'midnight': 'around midnight on '
+        }
+
         function updatePreview() {
             var messagePreview = ''
             $('.app-message-part-preview-container').show()
             var selectedOption = $('input[name="message-part--impact-times"]:checked').val();
-            if (selectedOption == 'Between start time and end time') {
+            if (selectedOption == 'Between one time and another') {
                 let startDate = $('#message-part--impact-start-date-day').val() + ' ' + numberToMonthString($('#message-part--impact-start-date-month').val()) + ' ' + $('#message-part--impact-start-date-year').val()
                 let startTime = $('#message-part--impact-start-time').val()
                 let endDate = $('#message-part--impact-end-date-day').val() + ' ' + numberToMonthString($('#message-part--impact-end-date-month').val()) + ' ' + $('#message-part--impact-end-date-year').val()
@@ -343,12 +443,12 @@
                 } else {
                     // Flooding has started
                     if (startDate == endDate) {
-                        messagePreview = 'Flooding started at ' + startTime + ' and is forecast until ' + endTime + ' on ' + startDate
+                        messagePreview = 'Flooding started between ' + startTime + ' and ' + endTime + ' on ' + startDate
                     } else {
-                        messagePreview = 'Flooding started at ' + startTime + ' on ' + startDate + ' and is forecast until ' + endTime + ' on ' + endDate
+                        messagePreview = 'Flooding started between ' + startTime + ' on ' + startDate + ' and ' + endTime + ' on ' + endDate
                     }
                 }
-            } else if (selectedOption == 'Start time only') {
+            } else if (selectedOption == 'A specific time') {
                 let startDate = $('#message-part--impact-date-day').val() + ' ' + numberToMonthString($('#message-part--impact-date-month').val()) + ' ' + $('#message-part--impact-date-year').val()
                 let startTime = $('#message-part--impact-time').val()
                if (certaintyString == 'Possible') {
@@ -360,6 +460,38 @@
                 } else {
                     // Flooding has started
                     messagePreview = 'Flooding started at ' + startTime + ' on ' + startDate
+                }
+            } else if (selectedOption == 'Part of the day') {
+                let startDate = $('#message-part--day-part-date-day').val() + ' ' + numberToMonthString($('#message-part--day-part-date-month').val()) + ' ' + $('#message-part--day-part-date-year').val()
+                let dayPart = $('input[name="message-part--impact-day-part"]:checked').val()
+                if (dayPart) {
+                    if (certaintyString == 'Possible') {
+                        // Flooding is possible
+                        messagePreview = 'Flooding is possible ' + dayPartStrings[dayPart] + startDate
+                    } else if (certaintyString == 'Likely') {
+                        // Flooding is likely
+                        messagePreview = 'Flooding is likely ' + dayPartStrings[dayPart] + startDate
+                    } else {
+                        // Flooding has started
+                        messagePreview = 'Flooding started ' + dayPartStrings[dayPart] + startDate
+                    }
+                } else {
+                    messagePreview = '&lt;select a part of the day&gt;'
+                }
+            } else if (selectedOption == 'Custom message') {
+                let customMessage = $('#message-part--custom-message').val()
+                if (customMessage == '') {
+                    customMessage = '<enter a custom message>'
+                }
+                if (certaintyString == 'Possible') {
+                    // Flooding is possible
+                    messagePreview = 'Flooding is possible ' + customMessage
+                } else if (certaintyString == 'Likely') {
+                    // Flooding is likely
+                    messagePreview = 'Flooding is likely ' + customMessage
+                } else {
+                    // Flooding has started
+                    messagePreview = 'Flooding started ' + customMessage
                 }
             } else if (selectedOption == 'Custom message') {
                 messagePreview = $('#message-part--impact-time-custom').val()

@@ -1,0 +1,227 @@
+{% extends 'layout_unbranded.html' %}
+
+{% set area = data.area %}
+
+{% set template = data.savedTemplates[data.selectedTemplate] %}
+
+{% if selectedTemplate %}
+    {% set pageTitle = 'Add a new saved message' %}
+    <h1 class="govuk-heading-xl">Add a new saved message</h1>
+{% else %}
+    {% set pageTitle = 'Change saved message' %}  
+{% endif %}
+
+{% block pageTitle %}
+    {{ pageTitle }}
+{% endblock %}
+
+{% block contextBanner %}
+
+    {{ targetAreaBanner({
+        area: area,
+        regionURL: '../region-overview'
+    }) }}
+
+{% endblock %}
+
+{% block beforeContent %}
+
+    {{ super() }}
+
+    {{ govukBackLink ({
+        text: 'Back',
+        href: 'javascript:history.back()'
+    }) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+        {% if template.author | length %}
+            <p class="govuk-hint">
+                Saved by {{ template.author }} on {{ template.date | friendlyDate }}
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-one-half">
+
+            <form action="templates">
+
+                {% set detailsContentHTML %}
+                    {{ govukSummaryList ({
+                        rows: [
+                            {
+                                key: {
+                                    text: '((yesterday))'
+                                },
+                                value: {
+                                    text: 'Yesterday’s date'
+                                }
+                            },
+                            {
+                                key: {
+                                    text: '((today))'
+                                },
+                                value: {
+                                    text: 'The current date'
+                                }
+                            },
+                            {
+                                key: {
+                                    text: '((tomorrow))'
+                                },
+                                value: {
+                                    text: 'Tomorrorow’s date'
+                                }
+                            },
+                            {
+                                key: {
+                                    text: '((area name))'
+                                },
+                                value: {
+                                    text: 'Target area name'
+                                }
+                            },
+                            {
+                                key: {
+                                    text: '((area description))'
+                                },
+                                value: {
+                                    text: 'Place names and description of current target area'
+                                }
+                            },
+                            {
+                                key: {
+                                    text: '**word or phrase**'
+                                },
+                                value: {
+                                    text: 'Will need to be replaced by author before sending'
+                                }
+                            }
+                        ]
+                    }) }}
+                {% endset %}
+
+                {% set hintHTML %}
+                    
+                    <p class="govuk-hint">
+                        Use template parts to help keep this message up-to-date.
+                    </p>
+                    
+                {% endset %}
+
+                {{ govukInput({
+                    id: 'template-name',
+                    name: 'savedTemplates[' + data.selectedTemplate + '][title]',
+                    label: {
+                        text: 'Template name'
+                    },
+                    classes: 'govuk-input--width-20',
+                    value: template.title
+                }) }}
+
+                {{ govukCharacterCount ({
+                    id: 'template-content',
+                    name: 'savedTemplates[' + data.selectedTemplate + '][message]',
+                    maxlength: '1500',
+                    rows: 18,
+                    value: data['template-content'] if data['template-content'] else '',
+                    label: {
+                        text: 'Message content'
+                    },
+                    hint: {
+                        html: hintHTML
+                    },
+                    value: template.message
+                }) }}
+
+                <input type="hidden" name="savedTemplates[{{ data.selectedTemplate }}][author]" value="you">
+
+                <input type="hidden" name="savedTemplates[{{ data.selectedTemplate }}][date]" value="{{ data.currentDate }}">
+
+                {{ govukButton ({
+                    html: 'Save message'
+                }) }}
+
+            </form>
+
+        </div>
+
+        <div class="govuk-grid-column-one-half">
+            
+            <h2 class="govuk-heading-m">
+                Message preview
+            </h2>
+
+            <p class="app-saved-message-preview"></p>
+
+            {{ govukDetails({
+                summaryText: 'View a list of available template parts',
+                html: detailsContentHTML
+            }) }}
+
+        </div>
+
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+
+    {{ super() }}
+
+    <script>
+
+        var $templateTitleInput = $('#template-name');
+        var $templateTextArea = $('#template-content');
+        var $preview = $('.app-saved-message-preview');
+        var areaJSON = {{ area | debug | safe }};
+        var author = '{{ template.author }}';
+
+        // Remove polygon data from areaJSON
+        delete areaJSON.polygonData;
+
+        // Update the preview
+        function updatePreview(templateContent) {
+
+            // Make call to template processing service
+            $.post( '/template-processing/fetch', {
+                content: templateContent,
+                area: areaJSON,
+                asPreview: true
+            }).done( function(data) {
+                $preview.html(data);
+            });
+
+        }
+
+        // When user changes the template content, update the preview
+        $templateTextArea.on('input', function() {
+            
+            var templateContent = $(this).val();
+            
+            updatePreview(templateContent);
+
+        });
+
+        // When user changes the template title, update the preview
+
+        $templateTitleInput.on('input', function() {
+            
+            var templateContent = $templateTextArea.val();
+            
+            updatePreview(templateContent);
+
+        });
+
+        updatePreview($templateTextArea.val());
+    </script>
+
+{% endblock %}

@@ -5,6 +5,7 @@
 {% block pageTitle %}
     Cause peak time
 {% endblock %}
+
 {% block contextBanner %}
 
     {{ targetAreaBanner({
@@ -57,7 +58,104 @@
             <form action="factors">
             {% endif %}
 
-                {% set peakHTML %}
+                {% set timesHTML %}
+
+                    {% set autoStartDate = data.currentDate | dateAddingHours(4) %}
+                    {% set autoEndDate = data.currentDate | dateAddingHours(8) %}
+                    
+                    {{ govukDateInput ({
+                        id: 'message-part--peak-start-date',
+                        namePrefix: 'message-part--peak-start-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Peak starts',
+                                isPageHeading: true,
+                                classes: 'govuk-fieldset__legend--s'
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 18 11 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: data['message-part--peak-start-date-day'] if data['message-part--peak-start-date-day'] else autoStartDate | getDay
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: data['message-part--peak-start-date-month'] if data['message-part--peak-start-date-month'] else autoStartDate | getMonth
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value: data['message-part--peak-start-date-year'] if data['message-part--peak-start-date-year'] else autoStartDate | getYear
+                            }
+                        ]
+                    }) }}
+
+                    {{ govukInput ({
+                        id: 'message-part--peak-start-time',
+                        name: 'message-part--peak-start-time',
+                        value: data['message-part--peak-start-time'] if data['message-part--peak-start-time'] else '12:00',
+                        classes: 'govuk-input--width-5',
+                        hint: {
+                            text: 'Use a 24-hour format. For example, 11:00.'
+                        },
+                        label: {
+                            text: 'Start time'
+                        }
+                    }) }}
+
+                    {{ govukDateInput ({
+                        id: 'message-part--peak-end-date',
+                        namePrefix: 'message-part--peak-end-date',
+                        fieldset: {
+                            legend: {
+                                text: 'Peak ends',
+                                isPageHeading: true,
+                                classes: 'govuk-fieldset__legend--s'
+                            }
+                        },
+                        hint: {
+                            text: 'For example, 18 11 2021'
+                        },
+                        items: [
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'day',
+                                value: data['message-part--peak-end-date-day'] if data['message-part--peak-end-date-day'] else autoEndDate | getDay
+                            },
+                            {
+                                classes: 'govuk-input--width-2',
+                                name: 'month',
+                                value: data['message-part--peak-end-date-month'] if data['message-part--peak-end-date-month'] else autoEndDate | getMonth
+                            },
+                            {
+                                classes: 'govuk-input--width-4',
+                                name: 'year',
+                                value: data['message-part--peak-end-date-year'] if data['message-part--peak-end-date-year'] else autoEndDate | getYear
+                            }
+                        ]
+                    }) }}
+
+                    {{ govukInput ({
+                        id: 'message-part--peak-end-time',
+                        name: 'message-part--peak-end-time',
+                        value: data['message-part--peak-end-time'] if data['message-part--peak-end-time'] else '12:00',
+                        classes: 'govuk-input--width-5',
+                        hint: {
+                            text: 'Use a 24-hour format. For example, 18:00.'
+                        },
+                        label: {
+                            text: 'End time'
+                        }
+                    }) }}
+                    
+                {% endset %}
+
+                {% set specificTimeHTML %}
 
                     {% set autoStartDate = data.currentDate | dateAddingHours(6) %}
                     
@@ -122,11 +220,19 @@
                     },
                     items: [
                         {
+                            text: 'Between one time and another',
+                            value: 'Between one time and another',
+                            checked: true if data['message-part--cause-peak'] == 'Between one time and another',
+                            conditional: {
+                                html: timesHTML
+                            }
+                        },
+                        {
                             text: 'At a particular time',
                             value: 'At a particular time',
                             checked: true if data['message-part--cause-peak'] == 'At a particular time',
                             conditional: {
-                                html: peakHTML
+                                html: specificTimeHTML
                             }
                         },
                         {
@@ -204,7 +310,17 @@
         function updatePreview() {
             var messagePreview = ''
             var selectedOption = $('input[name="message-part--cause-peak"]:checked').val();
-            if (selectedOption == 'At a particular time') {
+            if (selectedOption == 'Between one time and another') {
+                let startDate = $('#message-part--peak-start-date-day').val() + ' ' + numberToMonthString($('#message-part--peak-start-date-month').val()) + ' ' + $('#message-part--peak-start-date-year').val()
+                let startTime = $('#message-part--peak-start-time').val()
+                let endDate = $('#message-part--peak-end-date-day').val() + ' ' + numberToMonthString($('#message-part--peak-end-date-month').val()) + ' ' + $('#message-part--peak-end-date-year').val()
+                let endTime = $('#message-part--peak-end-time').val()
+               if (startDate == endDate) {
+                    messagePreview = 'Between ' + startTime + ' and ' + endTime + ' on ' + startDate
+                } else {
+                    messagePreview = 'Between ' + startTime + ' on ' + startDate + ' and ' + endTime + ' on ' + endDate
+                }
+            } else if (selectedOption == 'At a particular time') {
                 let peakDate = $('#message-part--cause-peak-date-day').val() + ' ' + numberToMonthString($('#message-part--cause-peak-date-month').val()) + ' ' + $('#message-part--cause-peak-date-year').val()
                 let peakTime = $('#message-part--cause-peak-time').val()
                 messagePreview = peakTime + ' on ' + peakDate
